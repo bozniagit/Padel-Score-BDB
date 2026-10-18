@@ -1,854 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Padel Watch Scorekeeper & Health Tracker</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Padel Scorekeeper - Wear OS Watch App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@400;600;800;900&display=swap');
+  
+  :root {
+    --team1-bg: linear-gradient(135deg, #0d3251 0%, #175d97 50%, #0d3251 100%);
+    --team2-bg: linear-gradient(135deg, #4d0a1b 0%, #8f1731 50%, #4d0a1b 100%);
+    --neon-yellow: #ccff00;
+  }
 
-        /* Active touch feedback */
-        .active-tap {
-            transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
-        }
-        .active-tap:active {
-            transform: scale(0.92);
-            filter: brightness(1.25);
-        }
+  body {
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
 
-        /* Watch screen container mask */
-        .watch-container {
-            width: 100vw;
-            height: 100vh;
-            max-width: 460px;
-            max-height: 460px;
-            border-radius: 50%;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.05);
-            transition: background-color 0.3s ease;
-        }
+  .font-teko {
+    font-family: 'Teko', sans-serif;
+  }
 
-        /* Theme Background Wrappers */
-        .theme-pitch-black { background-color: #000000; }
-        .theme-dark-slate  { background-color: #0f172a; }
-        .theme-court-green { background-color: #022c22; }
+  /* Deep inward padding for round watch screen safe zones */
+  .circular-safe-inset {
+    padding-left: 20%;
+    padding-right: 20%;
+  }
 
-        /* GRADIENTS FOR TEAM BUTTONS */
-        .btn-team-red {
-            background: linear-gradient(135deg, #e63946 0%, #b7094c 50%, #6b0000 100%);
-            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.35);
-        }
+  .watch-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 480px;
+    max-height: 480px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5);
+    position: relative;
+  }
 
-        .btn-team-blue {
-            background: linear-gradient(135deg, #0077b6 0%, #023e8a 50%, #03045e 100%);
-            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.35);
-        }
+  .glow-text {
+    text-shadow: 0 0 12px rgba(204, 255, 0, 0.5);
+  }
 
-        /* PROMINENT HIGH-CONTRAST UNDO BUTTON */
-        .btn-undo-prominent {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            border: 2px solid #fbbf24;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
-        }
-
-        /* Heartbeat Pulse Animation */
-        @keyframes heartPulse {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.25); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
-        .animate-heart-pulse {
-            animation: heartPulse 1.2s infinite ease-in-out;
-        }
-
-        /* Custom Scrollbars hidden for watch display */
-        ::-webkit-scrollbar { display: none; }
-    </style>
+  .btn-tap-effect:active {
+    transform: scale(0.96);
+    filter: brightness(1.2);
+  }
+  </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-0 m-0 bg-black select-none">
+<body class="bg-black text-white flex items-center justify-center min-h-screen m-0 p-0 overflow-hidden">
 
-    <!-- Watch Container Screen -->
-    <div id="watch-face" class="watch-container theme-pitch-black p-3 flex flex-col justify-between items-center text-center relative border border-gray-800">
+  <div class="watch-container flex flex-col justify-between relative bg-black border-4 border-gray-900">
+    
+    <!-- TOP HALF: TEAM 1 ZONE (Blue) -->
+    <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-between pt-6 pb-2 circular-safe-inset bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
+      
+      <!-- Live Clock Top Center -->
+      <div class="absolute top-1.5 left-0 right-0 text-center">
+        <span id="top-clock" class="text-lg font-black text-white tracking-widest drop-shadow">12:08</span>
+      </div>
 
-        <!-- TOP BAR: NAVIGATION MENU & MATCH STOPWATCH -->
-        <div class="w-full pt-1 px-6 flex justify-between items-center z-10 text-xs font-semibold">
-            <!-- Navigation Menu Button -->
-            <button id="btn-nav-menu" class="active-tap bg-gray-900/90 hover:bg-gray-800 border border-gray-700 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-md">
-                <i data-lucide="menu" class="w-3.5 h-3.5 text-gray-300"></i>
-                <span id="nav-mode-text" class="text-gray-200">MENU</span>
-            </button>
+      <!-- Top Content Row: Player Names (Left) and Game Score (Right) -->
+      <div class="flex items-center justify-between w-full my-auto">
+        
+        <!-- Left Column: Names TOP, Set scores BOTTOM -->
+        <div class="flex flex-col text-left max-w-[55%]">
+          <!-- Player 1 Name & Serve Indicator -->
+          <div class="flex items-center gap-1.5">
+            <span id="t1-p1" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">JACK</span>
+            <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
+          </div>
+          <!-- Player 2 Name & Serve Indicator -->
+          <div class="flex items-center gap-1.5">
+            <span id="t1-p2" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">TOM</span>
+            <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
+          </div>
 
-            <!-- Real-time Match Stopwatch -->
-            <div id="match-timer-display" class="font-mono text-xs font-extrabold text-yellow-400 bg-black/80 px-2.5 py-0.5 rounded-md border border-yellow-500/40">
-                00:00
-            </div>
-
-            <!-- Theme Cycle Button -->
-            <button id="btn-cycle-theme" class="active-tap bg-gray-900/90 border border-gray-700 p-1 rounded-full shadow-md">
-                <i data-lucide="palette" class="w-3.5 h-3.5 text-gray-300"></i>
-            </button>
+          <!-- Team 1 Sets Overview Breakdown (Bigger numbers) -->
+          <div class="flex items-center gap-3 text-2xl sm:text-3xl font-black mt-1">
+            <span id="t1-set1" class="text-gray-300">6</span>
+            <span id="t1-set2" class="text-slate-400">3</span>
+            <span id="t1-set3" class="text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text">4</span>
+          </div>
         </div>
 
-        <!-- HEALTH & FITNESS METRICS BAR -->
-        <div id="fitness-bar" class="w-full px-4 py-1 z-10 flex items-center justify-between bg-black/80 border border-gray-800 rounded-xl my-0.5 backdrop-blur-sm">
-            <!-- Heart Rate Monitor -->
-            <div class="flex items-center gap-1">
-                <i data-lucide="heart" class="w-3.5 h-3.5 text-red-500 fill-red-500 animate-heart-pulse"></i>
-                <span id="hr-display" class="font-mono font-bold text-[11px] text-white">128</span>
-                <span class="text-[9px] text-gray-400">BPM</span>
-            </div>
-
-            <!-- Calories Burned -->
-            <div class="flex items-center gap-1">
-                <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-400 fill-orange-400"></i>
-                <span id="kcal-display" class="font-mono font-bold text-[11px] text-white">0</span>
-                <span class="text-[9px] text-gray-400">KCAL</span>
-            </div>
-
-            <!-- Distance / Movement -->
-            <div class="flex items-center gap-1">
-                <i data-lucide="footprints" class="w-3.5 h-3.5 text-green-400"></i>
-                <span id="dist-display" class="font-mono font-bold text-[11px] text-white">0.0</span>
-                <span class="text-[9px] text-gray-400">KM</span>
-            </div>
+        <!-- Right Column: Massive Slanted Game Score Number -->
+        <div class="flex items-center justify-end">
+          <span id="t1-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">40</span>
         </div>
-
-        <!-- SETS & CURRENT GAMES SCORE BAR -->
-        <div class="z-10 flex items-center justify-between w-[92%] bg-gray-900/95 border border-gray-700 px-3 py-1 rounded-full text-xs font-bold shadow-md">
-            <!-- Team 1 Set Stats -->
-            <div class="flex items-center gap-1.5">
-                <span id="team-a-short" class="text-[10px] text-red-400 font-extrabold uppercase truncate max-w-[55px]">Alex / Sam</span>
-                <span id="sets-a-text" class="text-base font-black text-white">0</span>
-                <span id="games-a-text" class="text-xs text-gray-400 font-semibold">(0)</span>
-            </div>
-
-            <!-- Match Set Indicator & Duration -->
-            <div class="flex flex-col items-center">
-                <span id="game-status-label" class="text-[10px] font-black uppercase text-yellow-400 tracking-wider">SET 1</span>
-                <span id="current-set-time" class="text-[9px] font-mono text-gray-400">00m 00s</span>
-            </div>
-
-            <!-- Team 2 Set Stats -->
-            <div class="flex items-center gap-1.5">
-                <span id="games-b-text" class="text-xs text-gray-400 font-semibold">(0)</span>
-                <span id="sets-b-text" class="text-base font-black text-white">0</span>
-                <span id="team-b-short" class="text-[10px] text-blue-400 font-extrabold uppercase truncate max-w-[55px]">Leo / Marc</span>
-            </div>
-        </div>
-
-        <!-- MAIN SCORING BUTTONS (RED & BLUE GRADIENTS WITH DYNAMIC PLAYER NAMES) -->
-        <div class="w-full flex-1 my-1.5 grid grid-rows-2 gap-2 z-10 px-1">
-            
-            <!-- TEAM 1 (RED GRADIENT BUTTON) -->
-            <button id="btn-score-a" class="active-tap w-full btn-team-red rounded-2xl flex items-center justify-between px-3.5 transition duration-150 relative overflow-hidden">
-                <!-- Serve Indicator -->
-                <div id="serve-a" class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/20">
-                    <i data-lucide="circle-dot" class="w-3 h-3 text-yellow-300 fill-yellow-300"></i>
-                    <span class="text-[8px] font-black text-yellow-200 uppercase">SERVE</span>
-                </div>
-                
-                <!-- Main Score Content with Dynamic Name -->
-                <div class="flex flex-col items-center flex-1 mx-1">
-                    <span id="team-a-label" class="text-[11px] font-black uppercase tracking-wider text-white drop-shadow truncate max-w-[140px]">Alex / Sam</span>
-                    <span id="score-a-text" class="text-5xl font-black leading-none my-0.5 text-white drop-shadow-md">0</span>
-                </div>
-
-                <div class="bg-white/20 p-1.5 rounded-full border border-white/30 backdrop-blur-sm">
-                    <i data-lucide="plus" class="w-5 h-5 text-white stroke-[3]"></i>
-                </div>
-            </button>
-
-            <!-- TEAM 2 (BLUE GRADIENT BUTTON) -->
-            <button id="btn-score-b" class="active-tap w-full btn-team-blue rounded-2xl flex items-center justify-between px-3.5 transition duration-150 relative overflow-hidden">
-                <!-- Serve Indicator -->
-                <div id="serve-b" class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/20 opacity-0">
-                    <i data-lucide="circle-dot" class="w-3 h-3 text-yellow-300 fill-yellow-300"></i>
-                    <span class="text-[8px] font-black text-yellow-200 uppercase">SERVE</span>
-                </div>
-                
-                <!-- Main Score Content with Dynamic Name -->
-                <div class="flex flex-col items-center flex-1 mx-1">
-                    <span id="team-b-label" class="text-[11px] font-black uppercase tracking-wider text-white drop-shadow truncate max-w-[140px]">Leo / Marc</span>
-                    <span id="score-b-text" class="text-5xl font-black leading-none my-0.5 text-white drop-shadow-md">0</span>
-                </div>
-
-                <div class="bg-white/20 p-1.5 rounded-full border border-white/30 backdrop-blur-sm">
-                    <i data-lucide="plus" class="w-5 h-5 text-white stroke-[3]"></i>
-                </div>
-            </button>
-
-        </div>
-
-        <!-- MAIN SCORING SCREEN CONTROL FOOTER WITH HIGHLY VISIBLE UNDO BUTTON -->
-        <div class="w-full pb-1 px-4 flex justify-between items-center z-10 gap-2">
-            
-            <!-- Silver / Golden / Standard Point Rule Switcher -->
-            <button id="btn-toggle-rules" class="active-tap bg-gray-900 border border-gray-700 px-2.5 py-1.5 rounded-full text-[10px] font-black flex items-center gap-1 uppercase shadow-md text-gray-200">
-                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-blue-400"></i>
-                <span id="rule-badge-text">SILVER PT</span>
-            </button>
-
-            <!-- HIGHLY PROMINENT HIGH-CONTRAST UNDO BUTTON -->
-            <button id="btn-undo" class="active-tap btn-undo-prominent text-white px-4 py-1.5 rounded-full flex items-center justify-center gap-1.5 shadow-lg flex-1">
-                <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-200 stroke-[3]"></i>
-                <span class="text-xs font-black tracking-wider uppercase">UNDO</span>
-            </button>
-
-            <!-- Manual Serve Switch -->
-            <button id="btn-toggle-serve" class="active-tap bg-gray-900 border border-gray-700 hover:bg-gray-800 text-gray-200 p-2 rounded-full flex items-center justify-center shadow-md">
-                <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i>
-            </button>
-        </div>
-
-        <!-- OVERLAY 1: MAIN WATCH MENU -->
-        <div id="overlay-menu" class="absolute inset-0 bg-black/95 z-40 hidden flex-col justify-between p-5 text-center">
-            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider pt-2">Watch Menu</div>
-            
-            <div class="flex flex-col gap-2 my-auto">
-                <button id="btn-open-players" class="active-tap bg-gray-900 border border-gray-700 text-white p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
-                    <span>Player Names & Sync</span>
-                </button>
-
-                <button id="btn-open-history" class="active-tap bg-gray-900 border border-gray-700 text-white p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-                    <i data-lucide="history" class="w-4 h-4 text-blue-400"></i>
-                    <span>Match History & Stats</span>
-                </button>
-
-                <button id="btn-reset-match" class="active-tap bg-red-950 border border-red-800 text-red-200 p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    <span>Reset Match</span>
-                </button>
-            </div>
-
-            <button id="btn-close-menu" class="active-tap bg-gray-800 text-white font-bold py-2 rounded-xl text-xs">
-                Back to Game
-            </button>
-        </div>
-
-        <!-- OVERLAY 2: PLAYERS SETUP & PHONE INPUT OVERLAY -->
-        <div id="overlay-players" class="absolute inset-0 bg-black/95 z-50 hidden flex-col justify-between p-4 text-center">
-            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider pt-1">Player Configuration</div>
-
-            <div class="my-auto flex flex-col gap-2 text-left text-xs overflow-y-auto max-h-[260px] px-1">
-                <div>
-                    <label class="text-[10px] text-red-400 font-extrabold block mb-1">TEAM 1 (RED GRADIENT)</label>
-                    <input id="input-team-a" type="text" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-bold text-xs focus:outline-none focus:border-red-500" placeholder="e.g. Alex / Sam">
-                </div>
-
-                <div>
-                    <label class="text-[10px] text-blue-400 font-extrabold block mb-1">TEAM 2 (BLUE GRADIENT)</label>
-                    <input id="input-team-b" type="text" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-bold text-xs focus:outline-none focus:border-blue-500" placeholder="e.g. Leo / Marc">
-                </div>
-
-                <!-- Recent Teams History -->
-                <div class="pt-1">
-                    <span class="text-[10px] text-gray-400 font-bold block mb-1">RECENT SAVED PAIRS:</span>
-                    <div id="saved-players-list" class="flex flex-col gap-1 max-h-[75px] overflow-y-auto">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <button id="btn-trigger-phone-sync" class="active-tap bg-blue-950 border border-blue-700 text-blue-200 p-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5">
-                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-                    <span>Simulate Phone Input Sync</span>
-                </button>
-            </div>
-
-            <button id="btn-save-players" class="active-tap bg-green-600 text-white font-bold py-2 rounded-xl text-xs mt-1">
-                Save & Apply
-            </button>
-        </div>
-
-        <!-- OVERLAY 3: SIMULATED PHONE PAIRING OVERLAY -->
-        <div id="overlay-phone-sync" class="absolute inset-0 bg-gray-950 z-50 hidden flex-col justify-between p-4 text-center">
-            <div class="text-xs font-bold text-blue-400 uppercase tracking-wider pt-1 flex items-center justify-center gap-1">
-                <i data-lucide="smartphone" class="w-4 h-4"></i>
-                <span>Phone Input Companion</span>
-            </div>
-
-            <div class="my-auto flex flex-col items-center text-center gap-2">
-                <div class="bg-white p-2 rounded-xl">
-                    <svg class="w-20 h-20" viewBox="0 0 100 100">
-                        <path d="M0,0 h30 v30 h-30 z M10,10 h10 v10 h-10 z M70,0 h30 v30 h-30 z M80,10 h10 v10 h-10 z M0,70 h30 v30 h-30 z M10,80 h10 v10 h-10 z M40,10 h20 v10 h-20 z M40,40 h10 v10 h-10 z M60,40 h30 v20 h-30 z M40,70 h20 v20 h-20 z M70,70 h20 v20 h-20 z" fill="#000"/>
-                    </svg>
-                </div>
-                <p class="text-[10px] text-gray-300 px-2">Type player names comfortably on your paired phone or companion app.</p>
-            </div>
-
-            <button id="btn-close-phone-sync" class="active-tap bg-gray-800 text-white font-bold py-2 rounded-xl text-xs">
-                Back to Setup
-            </button>
-        </div>
-
-        <!-- OVERLAY 4: SET FINISHED PROMPT (OPEN SETS WITH SET DURATION TIME) -->
-        <div id="overlay-set-finished" class="absolute inset-0 bg-black/95 z-50 hidden flex-col justify-between p-5 text-center">
-            <div class="text-sm font-black text-yellow-400 uppercase tracking-wider pt-2 flex items-center justify-center gap-1">
-                <i data-lucide="trophy" class="w-4 h-4"></i>
-                <span>SET COMPLETED!</span>
-            </div>
-
-            <div class="my-auto py-2">
-                <p id="set-winner-text" class="text-base font-extrabold text-white mb-1">TEAM 1 WON THE SET!</p>
-                <p id="set-score-detail" class="text-xs text-gray-300 font-bold mb-1">(6 - 4)</p>
-                <p id="set-duration-detail" class="text-xs font-mono text-yellow-300 font-bold bg-yellow-950/40 py-1 px-2 rounded-md inline-block border border-yellow-700/50">Set Duration: 24m 12s</p>
-                <p class="text-[10px] text-gray-400 mt-2">Continue match with another set or finish & record result?</p>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <button id="btn-play-another-set" class="active-tap bg-green-600 hover:bg-green-500 text-white font-black py-2 rounded-xl text-xs">
-                    + Play Next Set
-                </button>
-                <button id="btn-finish-match" class="active-tap bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold py-2 rounded-xl text-xs">
-                    Finish Match & View Summary
-                </button>
-            </div>
-        </div>
-
-        <!-- OVERLAY 5: MATCH HISTORY & FITNESS REPORT -->
-        <div id="overlay-history" class="absolute inset-0 bg-black/95 z-40 hidden flex-col justify-between p-4 text-center">
-            <div class="text-xs font-bold text-blue-400 uppercase tracking-wider pt-1 flex items-center justify-center gap-1">
-                <i data-lucide="history" class="w-4 h-4"></i>
-                <span>Match & Fitness Logs</span>
-            </div>
-
-            <div id="history-container" class="my-auto overflow-y-auto max-h-[250px] w-full px-1 text-left flex flex-col gap-2">
-                <!-- Populated dynamically -->
-            </div>
-
-            <button id="btn-close-history" class="active-tap bg-gray-800 text-white font-bold py-2 rounded-xl text-xs mt-1">
-                Close
-            </button>
-        </div>
+      </div>
 
     </div>
 
-    <script>
-        const RULES = ['SILVER', 'GOLDEN', 'ADVANTAGE'];
-        const THEMES = ['theme-pitch-black', 'theme-dark-slate', 'theme-court-green'];
-        const POINT_LABELS = ["0", "15", "30", "40", "AD"];
-
-        // Initial default state
-        const DEFAULT_STATE = {
-            teamA: "Alex / Sam",
-            teamB: "Leo / Marc",
-            ruleMode: 'SILVER',
-            themeIndex: 0,
-            server: 'A',
-            serverFirstInSet: 'A',
-            scoreAIndex: 0,
-            scoreBIndex: 0,
-            deuceCount: 0,
-            gamesA: 0,
-            gamesB: 0,
-            setsA: 0,
-            setsB: 0,
-            isTiebreak: false,
-            tiebreakPointsA: 0,
-            tiebreakPointsB: 0,
-            completedSets: [],
-            matchFinished: false,
-            
-            // Health & Timing metrics
-            matchStartTime: null,
-            setStartTime: null,
-            elapsedSeconds: 0,
-            currentSetElapsedSeconds: 0,
-            heartRate: 125,
-            calories: 0,
-            distanceMeters: 0,
-            steps: 0
-        };
-
-        let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-        let historyStack = [];
-        let timerInterval = null;
-
-        // Enhanced Vibrate helper
-        function triggerHaptic(type = 'short') {
-            if ('vibrate' in navigator) {
-                try {
-                    if (type === 'short') navigator.vibrate([40]);
-                    else if (type === 'undo') navigator.vibrate([30, 30, 30]);
-                    else if (type === 'medium') navigator.vibrate([60, 30, 60]);
-                    else if (type === 'win') navigator.vibrate([100, 50, 100, 50, 150]);
-                } catch (e) {}
-            }
-        }
-
-        // Push snapshot for Multi-Level Undo
-        function pushState() {
-            historyStack.push(JSON.stringify(state));
-            if (historyStack.length > 40) historyStack.shift();
-        }
-
-        // Dedicated Undo Action
-        function undoLastAction() {
-            if (historyStack.length === 0) return;
-            state = JSON.parse(historyStack.pop());
-            triggerHaptic('undo');
-            render();
-        }
-
-        // Timer & Fitness Engine
-        function startMatchTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            if (!state.matchStartTime) state.matchStartTime = Date.now();
-            if (!state.setStartTime) state.setStartTime = Date.now();
-
-            timerInterval = setInterval(() => {
-                if (state.matchFinished) return;
-
-                state.elapsedSeconds++;
-                state.currentSetElapsedSeconds++;
-
-                if (state.elapsedSeconds % 5 === 0) {
-                    const hrDelta = Math.floor(Math.random() * 5) - 2;
-                    state.heartRate = Math.min(180, Math.max(105, state.heartRate + hrDelta));
-
-                    state.calories += Math.round((state.heartRate / 130) * 0.7);
-                    state.steps += Math.floor(Math.random() * 6) + 3;
-                    state.distanceMeters = Math.round((state.steps * 0.75) * 10) / 10;
-                }
-
-                renderFitnessBar();
-            }, 1000);
-        }
-
-        function formatTime(totalSec) {
-            const m = Math.floor(totalSec / 60);
-            const s = totalSec % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function formatTimeDetailed(totalSec) {
-            const m = Math.floor(totalSec / 60);
-            const s = totalSec % 60;
-            return `${m}m ${s}s`;
-        }
-
-        function renderFitnessBar() {
-            document.getElementById('match-timer-display').textContent = formatTime(state.elapsedSeconds);
-            document.getElementById('current-set-time').textContent = formatTimeDetailed(state.currentSetElapsedSeconds);
-            document.getElementById('hr-display').textContent = state.heartRate;
-            document.getElementById('kcal-display').textContent = state.calories;
-            document.getElementById('dist-display').textContent = (state.distanceMeters / 1000).toFixed(1);
-        }
-
-        // Add Point Logic
-        function addPoint(team) {
-            if (state.matchFinished) return;
-
-            pushState();
-            triggerHaptic('short');
-
-            if (state.isTiebreak) {
-                handleTiebreakPoint(team);
-            } else {
-                handleStandardPoint(team);
-            }
-
-            render();
-        }
-
-        function handleStandardPoint(team) {
-            const scoringTeam = team;
-            const oppTeam = team === 'A' ? 'B' : 'A';
-
-            const scoreSelf = scoringTeam === 'A' ? state.scoreAIndex : state.scoreBIndex;
-            const scoreOpp = scoringTeam === 'A' ? state.scoreBIndex : state.scoreAIndex;
-
-            if (scoreSelf < 3) {
-                if (scoringTeam === 'A') state.scoreAIndex++;
-                else state.scoreBIndex++;
-            } else if (scoreSelf === 3) {
-                if (scoreOpp < 3) {
-                    winGame(scoringTeam);
-                } else if (scoreOpp === 3) {
-                    if (state.ruleMode === 'GOLDEN') {
-                        winGame(scoringTeam);
-                    } else if (state.ruleMode === 'SILVER') {
-                        if (state.deuceCount >= 1) {
-                            winGame(scoringTeam);
-                        } else {
-                            if (scoringTeam === 'A') state.scoreAIndex = 4;
-                            else state.scoreBIndex = 4;
-                        }
-                    } else { // ADVANTAGE
-                        if (scoringTeam === 'A') state.scoreAIndex = 4;
-                        else state.scoreBIndex = 4;
-                    }
-                } else if (scoreOpp === 4) {
-                    state.scoreAIndex = 3;
-                    state.scoreBIndex = 3;
-                    state.deuceCount++;
-                }
-            } else if (scoreSelf === 4) {
-                winGame(scoringTeam);
-            }
-        }
-
-        function handleTiebreakPoint(team) {
-            if (team === 'A') state.tiebreakPointsA++;
-            else state.tiebreakPointsB++;
-
-            const total = state.tiebreakPointsA + state.tiebreakPointsB;
-            if (total % 2 === 1) {
-                toggleServe(false);
-            }
-
-            const ptsA = state.tiebreakPointsA;
-            const ptsB = state.tiebreakPointsB;
-
-            if (ptsA >= 7 && (ptsA - ptsB) >= 2) winGame('A');
-            else if (ptsB >= 7 && (ptsB - ptsA) >= 2) winGame('B');
-        }
-
-        function winGame(winner) {
-            state.scoreAIndex = 0;
-            state.scoreBIndex = 0;
-            state.deuceCount = 0;
-            state.tiebreakPointsA = 0;
-            state.tiebreakPointsB = 0;
-
-            if (winner === 'A') state.gamesA++;
-            else state.gamesB++;
-
-            toggleServe(false);
-            checkSetStatus();
-        }
-
-        function checkSetStatus() {
-            const gA = state.gamesA;
-            const gB = state.gamesB;
-
-            if (state.isTiebreak) {
-                promptSetFinished(gA > gB ? 'A' : 'B');
-                state.isTiebreak = false;
-                return;
-            }
-
-            if (gA >= 6 && (gA - gB) >= 2) {
-                promptSetFinished('A');
-            } else if (gB >= 6 && (gB - gA) >= 2) {
-                promptSetFinished('B');
-            } else if (gA === 6 && gB === 6) {
-                state.isTiebreak = true;
-                triggerHaptic('medium');
-            }
-        }
-
-        function promptSetFinished(winner) {
-            triggerHaptic('win');
-            
-            const winnerName = winner === 'A' ? state.teamA : state.teamB;
-            document.getElementById('set-winner-text').textContent = `${winnerName.toUpperCase()} WON THE SET!`;
-            document.getElementById('set-score-detail').textContent = `(${state.gamesA} - ${state.gamesB})`;
-            document.getElementById('set-duration-detail').textContent = `Set Duration: ${formatTimeDetailed(state.currentSetElapsedSeconds)}`;
-
-            state.completedSets.push({
-                a: state.gamesA,
-                b: state.gamesB,
-                durationSeconds: state.currentSetElapsedSeconds
-            });
-
-            if (winner === 'A') state.setsA++;
-            else state.setsB++;
-
-            state.gamesA = 0;
-            state.gamesB = 0;
-
-            document.getElementById('overlay-set-finished').classList.remove('hidden');
-            document.getElementById('overlay-set-finished').classList.add('flex');
-        }
-
-        function startNextSet() {
-            triggerHaptic('short');
-            document.getElementById('overlay-set-finished').classList.add('hidden');
-            document.getElementById('overlay-set-finished').classList.remove('flex');
-            
-            state.currentSetElapsedSeconds = 0;
-            state.serverFirstInSet = state.serverFirstInSet === 'A' ? 'B' : 'A';
-            state.server = state.serverFirstInSet;
-            render();
-        }
-
-        function finishAndSaveMatch() {
-            triggerHaptic('win');
-            state.matchFinished = true;
-            document.getElementById('overlay-set-finished').classList.add('hidden');
-            document.getElementById('overlay-set-finished').classList.remove('flex');
-
-            saveMatchToHistory();
-            render();
-            showHistoryOverlay();
-        }
-
-        function toggleServe(manual = true) {
-            if (manual) pushState();
-            state.server = state.server === 'A' ? 'B' : 'A';
-            if (manual) {
-                triggerHaptic('short');
-                render();
-            }
-        }
-
-        function cycleRuleMode() {
-            pushState();
-            const currentIdx = RULES.indexOf(state.ruleMode);
-            state.ruleMode = RULES[(currentIdx + 1) % RULES.length];
-            triggerHaptic('short');
-            render();
-        }
-
-        function cycleTheme() {
-            state.themeIndex = (state.themeIndex + 1) % THEMES.length;
-            triggerHaptic('short');
-            renderTheme();
-        }
-
-        function renderTheme() {
-            const watchFace = document.getElementById('watch-face');
-            THEMES.forEach(t => watchFace.classList.remove(t));
-            watchFace.classList.add(THEMES[state.themeIndex]);
-        }
-
-        // Render UI Elements
-        function render() {
-            renderTheme();
-            renderFitnessBar();
-
-            document.getElementById('rule-badge-text').textContent = `${state.ruleMode} PT`;
-
-            document.getElementById('team-a-label').textContent = state.teamA;
-            document.getElementById('team-b-label').textContent = state.teamB;
-            document.getElementById('team-a-short').textContent = state.teamA;
-            document.getElementById('team-b-short').textContent = state.teamB;
-
-            const statusLabel = document.getElementById('game-status-label');
-            if (state.matchFinished) {
-                statusLabel.textContent = "FINISHED";
-            } else if (state.isTiebreak) {
-                statusLabel.textContent = "TIEBREAK";
-            } else {
-                statusLabel.textContent = `SET ${state.setsA + state.setsB + 1}`;
-            }
-
-            document.getElementById('sets-a-text').textContent = state.setsA;
-            document.getElementById('sets-b-text').textContent = state.setsB;
-            document.getElementById('games-a-text').textContent = `(${state.gamesA})`;
-            document.getElementById('games-b-text').textContent = `(${state.gamesB})`;
-
-            const scoreAEl = document.getElementById('score-a-text');
-            const scoreBEl = document.getElementById('score-b-text');
-
-            if (state.isTiebreak) {
-                scoreAEl.textContent = state.tiebreakPointsA;
-                scoreBEl.textContent = state.tiebreakPointsB;
-            } else {
-                scoreAEl.textContent = POINT_LABELS[state.scoreAIndex];
-                scoreBEl.textContent = POINT_LABELS[state.scoreBIndex];
-
-                if (state.scoreAIndex === 3 && state.scoreBIndex === 3) {
-                    if (state.ruleMode === 'GOLDEN' || (state.ruleMode === 'SILVER' && state.deuceCount >= 1)) {
-                        scoreAEl.textContent = "DEC";
-                        scoreBEl.textContent = "DEC";
-                    }
-                }
-            }
-
-            document.getElementById('serve-a').style.opacity = state.server === 'A' ? '1' : '0';
-            document.getElementById('serve-b').style.opacity = state.server === 'B' ? '1' : '0';
-        }
-
-        function savePlayersToStorage() {
-            const teamA = document.getElementById('input-team-a').value.trim() || "Alex / Sam";
-            const teamB = document.getElementById('input-team-b').value.trim() || "Leo / Marc";
-
-            state.teamA = teamA;
-            state.teamB = teamB;
-
-            let saved = JSON.parse(localStorage.getItem('padel_saved_players') || '[]');
-            const pairStr = `${teamA} vs ${teamB}`;
-            if (!saved.includes(pairStr)) {
-                saved.unshift(pairStr);
-                if (saved.length > 5) saved.pop();
-                localStorage.setItem('padel_saved_players', JSON.stringify(saved));
-            }
-
-            triggerHaptic('short');
-            closeOverlays();
-            render();
-        }
-
-        function loadSavedPlayersUI() {
-            const container = document.getElementById('saved-players-list');
-            container.innerHTML = '';
-            let saved = JSON.parse(localStorage.getItem('padel_saved_players') || '[]');
-
-            if (saved.length === 0) {
-                container.innerHTML = '<span class="text-[10px] text-gray-500 italic">No saved pairs yet</span>';
-                return;
-            }
-
-            saved.forEach(pair => {
-                const btn = document.createElement('button');
-                btn.className = "active-tap bg-gray-900 border border-gray-800 text-left p-1.5 rounded text-[10px] font-bold text-gray-300 truncate w-full";
-                btn.textContent = pair;
-                btn.onclick = () => {
-                    const parts = pair.split(' vs ');
-                    if (parts.length === 2) {
-                        document.getElementById('input-team-a').value = parts[0];
-                        document.getElementById('input-team-b').value = parts[1];
-                    }
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function saveMatchToHistory() {
-            let history = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
-            const record = {
-                date: new Date().toLocaleDateString(),
-                teamA: state.teamA,
-                teamB: state.teamB,
-                setsA: state.setsA,
-                setsB: state.setsB,
-                completedSets: state.completedSets,
-                durationFormatted: formatTimeDetailed(state.elapsedSeconds),
-                calories: state.calories,
-                avgHr: state.heartRate
-            };
-            history.unshift(record);
-            if (history.length > 15) history.pop();
-            localStorage.setItem('padel_match_history', JSON.stringify(history));
-        }
-
-        function showHistoryOverlay() {
-            const container = document.getElementById('history-container');
-            container.innerHTML = '';
-            let history = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
-
-            if (history.length === 0) {
-                container.innerHTML = '<div class="text-xs text-gray-500 text-center py-4">No match history recorded yet.</div>';
-            } else {
-                history.forEach(item => {
-                    const setBreakdownHtml = item.completedSets.map((s, idx) => 
-                        `<span class="bg-black/50 px-1.5 py-0.5 rounded border border-gray-700">Set ${idx+1}: ${s.a}-${s.b} (${formatTimeDetailed(s.durationSeconds)})</span>`
-                    ).join(' ');
-
-                    const card = document.createElement('div');
-                    card.className = "bg-gray-900 border border-gray-800 rounded-lg p-2 text-xs flex flex-col gap-1";
-                    card.innerHTML = `
-                        <div class="flex justify-between text-[10px] text-gray-400 font-bold">
-                            <span>${item.date}</span>
-                            <span class="text-yellow-400">⏱ ${item.durationFormatted}</span>
-                        </div>
-                        <div class="font-extrabold text-white text-[11px] truncate">${item.teamA} vs ${item.teamB}</div>
-                        <div class="text-[10px] text-gray-300 flex flex-wrap gap-1 mt-0.5">${setBreakdownHtml}</div>
-                        <div class="text-[9px] text-orange-400 font-semibold flex gap-2 border-t border-gray-800/80 pt-1 mt-0.5">
-                            <span>🔥 ${item.calories} kcal</span>
-                            <span>❤️ Avg ${item.avgHr} BPM</span>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-
-            closeOverlays();
-            document.getElementById('overlay-history').classList.remove('hidden');
-            document.getElementById('overlay-history').classList.add('flex');
-        }
-
-        function closeOverlays() {
-            document.querySelectorAll('[id^="overlay-"]').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
-            });
-        }
-
-        function resetMatch() {
-            pushState();
-            state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            triggerHaptic('medium');
-            closeOverlays();
-            startMatchTimer();
-            render();
-        }
-
-        window.onload = function() {
-            lucide.createIcons();
-            startMatchTimer();
-
-            // Scoring events
-            document.getElementById('btn-score-a').addEventListener('click', () => addPoint('A'));
-            document.getElementById('btn-score-b').addEventListener('click', () => addPoint('B'));
-
-            // Control triggers
-            document.getElementById('btn-undo').addEventListener('click', undoLastAction);
-            document.getElementById('btn-toggle-serve').addEventListener('click', () => toggleServe(true));
-            document.getElementById('btn-toggle-rules').addEventListener('click', cycleRuleMode);
-            document.getElementById('btn-cycle-theme').addEventListener('click', cycleTheme);
-
-            // Menu triggers
-            document.getElementById('btn-nav-menu').addEventListener('click', () => {
-                triggerHaptic('short');
-                document.getElementById('overlay-menu').classList.remove('hidden');
-                document.getElementById('overlay-menu').classList.add('flex');
-            });
-            document.getElementById('btn-close-menu').addEventListener('click', closeOverlays);
-
-            document.getElementById('btn-open-players').addEventListener('click', () => {
-                triggerHaptic('short');
-                closeOverlays();
-                document.getElementById('input-team-a').value = state.teamA;
-                document.getElementById('input-team-b').value = state.teamB;
-                loadSavedPlayersUI();
-                document.getElementById('overlay-players').classList.remove('hidden');
-                document.getElementById('overlay-players').classList.add('flex');
-            });
-
-            document.getElementById('btn-trigger-phone-sync').addEventListener('click', () => {
-                triggerHaptic('short');
-                closeOverlays();
-                document.getElementById('overlay-phone-sync').classList.remove('hidden');
-                document.getElementById('overlay-phone-sync').classList.add('flex');
-            });
-            document.getElementById('btn-close-phone-sync').addEventListener('click', closeOverlays);
-
-            document.getElementById('btn-save-players').addEventListener('click', savePlayersToStorage);
-            document.getElementById('btn-open-history').addEventListener('click', showHistoryOverlay);
-            document.getElementById('btn-close-history').addEventListener('click', closeOverlays);
-            document.getElementById('btn-reset-match').addEventListener('click', resetMatch);
-
-            // Open sets handlers
-            document.getElementById('btn-play-another-set').addEventListener('click', startNextSet);
-            document.getElementById('btn-finish-match').addEventListener('click', finishAndSaveMatch);
-
-            render();
-        };
-    </script>
+    <!-- CENTER DIVIDER CONTROL BAR -->
+    <div class="z-20 w-full bg-black/90 backdrop-blur-md border-y border-yellow-500/30 py-1.5 px-3 flex items-center justify-between shadow-2xl relative">
+      
+      <!-- Left: Elongated Pill Undo Button -->
+      <button onclick="event.stopPropagation(); undoLastPoint();" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 btn-tap-effect border border-gray-700 shadow-md">
+        <span class="text-sm">↩</span>
+        <span>Undo</span>
+      </button>
+
+      <!-- Center Status & Active Scoring Rule Badge -->
+      <div class="flex flex-col items-center justify-center leading-none px-1">
+        <span id="active-rule-badge" class="bg-yellow-400/20 text-[var(--neon-yellow)] text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-wider border border-yellow-400/40 uppercase mb-0.5">
+          GOLDEN POINT
+        </span>
+        <div id="match-status-text" class="text-[9px] font-black text-yellow-400 tracking-wide uppercase">
+          <span id="match-timer" class="font-mono text-gray-300">⏱ 1:10</span> <span id="context-status" class="text-[var(--neon-yellow)]">BREAK POINT</span>
+        </div>
+      </div>
+
+      <!-- Right: Elongated Pill Menu Button -->
+      <button onclick="event.stopPropagation(); toggleMenu(true);" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 btn-tap-effect border border-gray-700 shadow-md">
+        <span class="text-sm">⚙</span>
+        <span>Menu</span>
+      </button>
+    </div>
+
+    <!-- BOTTOM HALF: TEAM 2 ZONE (Red/Purple) -->
+    <div id="team2-zone" onclick="scorePoint(2)" class="h-1/2 w-full flex flex-col justify-between pt-2 pb-6 circular-safe-inset bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-rose-800 via-rose-950 to-slate-950 cursor-pointer relative btn-tap-effect border-t border-gray-800/60">
+      
+      <!-- Bottom Content Row: Player Names (Left) and Game Score (Right) -->
+      <div class="flex items-center justify-between w-full my-auto">
+        
+        <!-- Left Column: Names TOP, Set scores BOTTOM (matching Blue zone layout) -->
+        <div class="flex flex-col text-left max-w-[55%]">
+          <!-- Player 1 Name & Serve Indicator -->
+          <div class="flex items-center gap-1.5">
+            <span id="t2-p1" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">HARRY</span>
+            <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
+          </div>
+          <!-- Player 2 Name & Serve Indicator -->
+          <div class="flex items-center gap-1.5">
+            <span id="t2-p2" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">SAM</span>
+            <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
+          </div>
+
+          <!-- Team 2 Sets Overview Breakdown -->
+          <div class="flex items-center gap-3 text-2xl sm:text-3xl font-black mt-1">
+            <span id="t2-set1" class="text-slate-400">4</span>
+            <span id="t2-set2" class="text-gray-300">6</span>
+            <span id="t2-set3" class="text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text">3</span>
+          </div>
+        </div>
+
+        <!-- Right Column: Massive Slanted Game Score Number -->
+        <div class="flex items-center justify-end">
+          <span id="t2-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">AD</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="menu-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
+    <div class="w-full max-w-xs space-y-4 my-auto py-6">
+      <h2 class="text-lg font-black text-yellow-400 tracking-wider">MATCH SETTINGS</h2>
+      
+      <!-- Scoring Rule Selector -->
+      <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-left">
+        <label class="text-xs text-gray-400 font-semibold block mb-1.5">SCORING RULE</label>
+        <select id="rule-selector" onchange="updateScoringRule(this.value)" class="w-full bg-gray-800 text-white text-xs font-bold p-2.5 rounded-lg border border-gray-700 outline-none">
+          <option value="GOLDEN POINT">Golden Point (No Advantage)</option>
+          <option value="SILVER POINT">Silver Point (1 Advantage, then Deciding)</option>
+          <option value="STAR POINT">Star Point (Tie-break Rule)</option>
+          <option value="ADVANTAGE">Standard Advantage (Deuce / Ad)</option>
+        </select>
+      </div>
+
+      <!-- Player Names Config -->
+      <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-left space-y-2">
+        <label class="text-xs text-gray-400 font-semibold block">EDIT PLAYERS</label>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="input-t1p1" type="text" placeholder="P1 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t1p2" type="text" placeholder="P2 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t2p1" type="text" placeholder="P3 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t2p2" type="text" placeholder="P4 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+        </div>
+        <button onclick="savePlayerNames()" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-bold py-2 rounded text-white">Save Player Names</button>
+      </div>
+
+      <!-- Match Control Buttons -->
+      <div class="flex gap-2">
+        <button onclick="resetMatch()" class="w-1/2 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl border border-red-500">
+          Reset Match
+        </button>
+        <button onclick="toggleMenu(false)" class="w-1/2 bg-yellow-400 text-black text-xs font-bold py-2.5 rounded-xl">
+          Back to Match
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let matchState = {
+    rule: 'GOLDEN POINT',
+    team1: { name: 'Team 1', players: ['JACK', 'TOM'], gameScore: 3, setScores: [6, 3, 4] },
+    team2: { name: 'Team 2', players: ['HARRY', 'SAM'], gameScore: 4, setScores: [4, 6, 3] },
+    currentSet: 2,
+    serverIndex: 1,
+    history: []
+  };
+
+  const pointTerms = ['0', '15', '30', '40', 'AD'];
+
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const clockEl = document.getElementById('top-clock');
+    if (clockEl) clockEl.innerText = `${hours}:${minutes}`;
+  }
+
+  function updateScoringRule(newRule) {
+    matchState.rule = newRule;
+    document.getElementById('active-rule-badge').innerText = newRule;
+    localStorage.setItem('padel_rule', newRule);
+  }
+
+  function savePlayerNames() {
+    const t1p1 = (document.getElementById('input-t1p1').value.trim() || 'JACK').toUpperCase();
+    const t1p2 = (document.getElementById('input-t1p2').value.trim() || 'TOM').toUpperCase();
+    const t2p1 = (document.getElementById('input-t2p1').value.trim() || 'HARRY').toUpperCase();
+    const t2p2 = (document.getElementById('input-t2p2').value.trim() || 'SAM').toUpperCase();
+
+    matchState.team1.players = [t1p1, t1p2];
+    matchState.team2.players = [t2p1, t2p2];
+
+    localStorage.setItem('padel_t1_p1', t1p1);
+    localStorage.setItem('padel_t1_p2', t1p2);
+    localStorage.setItem('padel_t2_p1', t2p1);
+    localStorage.setItem('padel_t2_p2', t2p2);
+
+    renderUI();
+    toggleMenu(false);
+  }
+
+  function resetMatch() {
+    saveStateForUndo();
+    matchState.team1.gameScore = 0;
+    matchState.team1.setScores = [0, 0, 0];
+    matchState.team2.gameScore = 0;
+    matchState.team2.setScores = [0, 0, 0];
+    matchState.currentSet = 0;
+    renderUI();
+    toggleMenu(false);
+  }
+
+  function scorePoint(teamNumber) {
+    saveStateForUndo();
+    if (window.navigator.vibrate) window.navigator.vibrate(40);
+    
+    let scoringTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
+    let opponentTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
+
+    if (scoringTeam.gameScore < 3) {
+      scoringTeam.gameScore++;
+    } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore < 3) {
+      winGame(teamNumber);
+      return;
+    } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
+      if (matchState.rule === 'GOLDEN POINT') {
+        winGame(teamNumber);
+        return;
+      } else {
+        scoringTeam.gameScore = 4; // AD
+      }
+    } else if (scoringTeam.gameScore === 4) {
+      winGame(teamNumber);
+      return;
+    } else if (opponentTeam.gameScore === 4) {
+      opponentTeam.gameScore = 3; // Deuce back
+    }
+
+    renderUI();
+  }
+
+  function winGame(teamNumber) {
+    let winningTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
+    winningTeam.setScores[matchState.currentSet]++;
+    matchState.team1.gameScore = 0;
+    matchState.team2.gameScore = 0;
+    
+    if (winningTeam.setScores[matchState.currentSet] >= 6) {
+      if (matchState.currentSet < 2) matchState.currentSet++;
+    }
+
+    renderUI();
+  }
+
+  function saveStateForUndo() {
+    matchState.history.push(JSON.parse(JSON.stringify(matchState)));
+  }
+
+  function undoLastPoint() {
+    if (matchState.history.length > 0) {
+      const prev = matchState.history.pop();
+      matchState = prev;
+      renderUI();
+    }
+  }
+
+  function toggleMenu(show) {
+    document.getElementById('menu-modal').classList.toggle('hidden', !show);
+    if (show) {
+      document.getElementById('input-t1p1').value = matchState.team1.players[0] || '';
+      document.getElementById('input-t1p2').value = matchState.team1.players[1] || '';
+      document.getElementById('input-t2p1').value = matchState.team2.players[0] || '';
+      document.getElementById('input-t2p2').value = matchState.team2.players[1] || '';
+      document.getElementById('rule-selector').value = matchState.rule;
+    }
+  }
+
+  function renderUI() {
+    document.getElementById('active-rule-badge').innerText = matchState.rule;
+    
+    document.getElementById('t1-p1').innerText = matchState.team1.players[0].toUpperCase();
+    document.getElementById('t1-p2').innerText = matchState.team1.players[1].toUpperCase();
+    document.getElementById('t2-p1').innerText = matchState.team2.players[0].toUpperCase();
+    document.getElementById('t2-p2').innerText = matchState.team2.players[1].toUpperCase();
+
+    // Game Scores
+    document.getElementById('t1-score').innerText = pointTerms[matchState.team1.gameScore] || '0';
+    document.getElementById('t2-score').innerText = pointTerms[matchState.team2.gameScore] || '0';
+
+    // Set Scores
+    document.getElementById('t1-set1').innerText = matchState.team1.setScores[0];
+    document.getElementById('t1-set2').innerText = matchState.team1.setScores[1];
+    document.getElementById('t1-set3').innerText = matchState.team1.setScores[2];
+
+    document.getElementById('t2-set1').innerText = matchState.team2.setScores[0];
+    document.getElementById('t2-set2').innerText = matchState.team2.setScores[1];
+    document.getElementById('t2-set3').innerText = matchState.team2.setScores[2];
+  }
+
+  window.onload = function() {
+    updateClock();
+    setInterval(updateClock, 10000);
+
+    matchState.team1.players[0] = (localStorage.getItem('padel_t1_p1') || 'JACK').toUpperCase();
+    matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'TOM').toUpperCase();
+    matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'HARRY').toUpperCase();
+    matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SAM').toUpperCase();
+    matchState.rule = localStorage.getItem('padel_rule') || 'GOLDEN POINT';
+    renderUI();
+  };
+</script>
 </body>
 </html>
