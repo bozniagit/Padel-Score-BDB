@@ -72,12 +72,12 @@
         <div class="flex flex-col text-left max-w-[55%]">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t1-p1" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">JACK</span>
+            <span id="t1-p1" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">BEN</span>
             <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t1-p2" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">TOM</span>
+            <span id="t1-p2" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">REBECCA</span>
             <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
           </div>
 
@@ -133,12 +133,12 @@
         <div class="flex flex-col text-left max-w-[55%]">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t2-p1" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">HARRY</span>
+            <span id="t2-p1" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">IAN</span>
             <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t2-p2" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">SAM</span>
+            <span id="t2-p2" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">SARAH</span>
             <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
           </div>
 
@@ -179,10 +179,10 @@
       <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-left space-y-2">
         <label class="text-xs text-gray-400 font-semibold block">EDIT PLAYERS</label>
         <div class="grid grid-cols-2 gap-2">
-          <input id="input-t1p1" type="text" placeholder="P1 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t1p2" type="text" placeholder="P2 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t2p1" type="text" placeholder="P3 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t2p2" type="text" placeholder="P4 Name" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t1p1" type="text" placeholder="P1 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t1p2" type="text" placeholder="P2 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t2p1" type="text" placeholder="P3 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+          <input id="input-t2p2" type="text" placeholder="P4 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
         </div>
         <button onclick="savePlayerNames()" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-bold py-2 rounded text-white">Save Player Names</button>
       </div>
@@ -200,10 +200,12 @@
   </div>
 
 <script>
+  let isEditingPlayers = false;
+
   let matchState = {
     rule: 'GOLDEN POINT',
-    team1: { name: 'Team 1', players: ['JACK', 'TOM'], gameScore: 3, setScores: [6, 3, 4] },
-    team2: { name: 'Team 2', players: ['HARRY', 'SAM'], gameScore: 4, setScores: [4, 6, 3] },
+    team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 3, setScores: [6, 3, 4] },
+    team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 4, setScores: [4, 6, 3] },
     currentSet: 2,
     serverIndex: 1,
     history: []
@@ -211,7 +213,12 @@
 
   const pointTerms = ['0', '15', '30', '40', 'AD'];
 
+  function pauseUpdatesForKeyboard(isFocused) {
+    isEditingPlayers = isFocused;
+  }
+
   function updateClock() {
+    if (isEditingPlayers) return; // Prevent clock updates from closing watch keyboard
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -226,10 +233,10 @@
   }
 
   function savePlayerNames() {
-    const t1p1 = (document.getElementById('input-t1p1').value.trim() || 'JACK').toUpperCase();
-    const t1p2 = (document.getElementById('input-t1p2').value.trim() || 'TOM').toUpperCase();
-    const t2p1 = (document.getElementById('input-t2p1').value.trim() || 'HARRY').toUpperCase();
-    const t2p2 = (document.getElementById('input-t2p2').value.trim() || 'SAM').toUpperCase();
+    const t1p1 = (document.getElementById('input-t1p1').value.trim() || 'BEN').toUpperCase();
+    const t1p2 = (document.getElementById('input-t1p2').value.trim() || 'REBECCA').toUpperCase();
+    const t2p1 = (document.getElementById('input-t2p1').value.trim() || 'IAN').toUpperCase();
+    const t2p2 = (document.getElementById('input-t2p2').value.trim() || 'SARAH').toUpperCase();
 
     matchState.team1.players = [t1p1, t1p2];
     matchState.team2.players = [t2p1, t2p2];
@@ -320,35 +327,49 @@
   }
 
   function renderUI() {
-    document.getElementById('active-rule-badge').innerText = matchState.rule;
+    const activeRuleBadge = document.getElementById('active-rule-badge');
+    if (activeRuleBadge) activeRuleBadge.innerText = matchState.rule;
     
-    document.getElementById('t1-p1').innerText = matchState.team1.players[0].toUpperCase();
-    document.getElementById('t1-p2').innerText = matchState.team1.players[1].toUpperCase();
-    document.getElementById('t2-p1').innerText = matchState.team2.players[0].toUpperCase();
-    document.getElementById('t2-p2').innerText = matchState.team2.players[1].toUpperCase();
+    const t1p1 = document.getElementById('t1-p1');
+    const t1p2 = document.getElementById('t1-p2');
+    const t2p1 = document.getElementById('t2-p1');
+    const t2p2 = document.getElementById('t2-p2');
+
+    if (t1p1) t1p1.innerText = matchState.team1.players[0].toUpperCase();
+    if (t1p2) t1p2.innerText = matchState.team1.players[1].toUpperCase();
+    if (t2p1) t2p1.innerText = matchState.team2.players[0].toUpperCase();
+    if (t2p2) t2p2.innerText = matchState.team2.players[1].toUpperCase();
 
     // Game Scores
-    document.getElementById('t1-score').innerText = pointTerms[matchState.team1.gameScore] || '0';
-    document.getElementById('t2-score').innerText = pointTerms[matchState.team2.gameScore] || '0';
+    const t1Score = document.getElementById('t1-score');
+    const t2Score = document.getElementById('t2-score');
+    if (t1Score) t1Score.innerText = pointTerms[matchState.team1.gameScore] || '0';
+    if (t2Score) t2Score.innerText = pointTerms[matchState.team2.gameScore] || '0';
 
     // Set Scores
-    document.getElementById('t1-set1').innerText = matchState.team1.setScores[0];
-    document.getElementById('t1-set2').innerText = matchState.team1.setScores[1];
-    document.getElementById('t1-set3').innerText = matchState.team1.setScores[2];
+    const t1s1 = document.getElementById('t1-set1');
+    const t1s2 = document.getElementById('t1-set2');
+    const t1s3 = document.getElementById('t1-set3');
+    if (t1s1) t1s1.innerText = matchState.team1.setScores[0];
+    if (t1s2) t1s2.innerText = matchState.team1.setScores[1];
+    if (t1s3) t1s3.innerText = matchState.team1.setScores[2];
 
-    document.getElementById('t2-set1').innerText = matchState.team2.setScores[0];
-    document.getElementById('t2-set2').innerText = matchState.team2.setScores[1];
-    document.getElementById('t2-set3').innerText = matchState.team2.setScores[2];
+    const t2s1 = document.getElementById('t2-set1');
+    const t2s2 = document.getElementById('t2-set2');
+    const t2s3 = document.getElementById('t2-set3');
+    if (t2s1) t2s1.innerText = matchState.team2.setScores[0];
+    if (t2s2) t2s2.innerText = matchState.team2.setScores[1];
+    if (t2s3) t2s3.innerText = matchState.team2.setScores[2];
   }
 
   window.onload = function() {
     updateClock();
     setInterval(updateClock, 10000);
 
-    matchState.team1.players[0] = (localStorage.getItem('padel_t1_p1') || 'JACK').toUpperCase();
-    matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'TOM').toUpperCase();
-    matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'HARRY').toUpperCase();
-    matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SAM').toUpperCase();
+    matchState.team1.players[0] = (localStorage.getItem('padel_t1_p1') || 'BEN').toUpperCase();
+    matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'REBECCA').toUpperCase();
+    matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'IAN').toUpperCase();
+    matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SARAH').toUpperCase();
     matchState.rule = localStorage.getItem('padel_rule') || 'GOLDEN POINT';
     renderUI();
   };
