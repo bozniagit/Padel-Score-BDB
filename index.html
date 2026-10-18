@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Padel Scorekeeper - Wear OS Watch App</title>
+  
+  <!-- Web App Icon & PWA Manifest for Galaxy Watch & Mobile Home Screens -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23ccff00'/><circle cx='35' cy='35' r='4' fill='%23000'/><circle cx='65' cy='35' r='4' fill='%23000'/><circle cx='35' cy='65' r='4' fill='%23000'/><circle cx='65' cy='65' r='4' fill='%23000'/><path d='M20 50 Q 50 20 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/><path d='M20 50 Q 50 80 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23ccff00'/><circle cx='35' cy='35' r='4' fill='%23000'/><circle cx='65' cy='35' r='4' fill='%23000'/><circle cx='35' cy='65' r='4' fill='%23000'/><circle cx='65' cy='65' r='4' fill='%23000'/><path d='M20 50 Q 50 20 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/><path d='M20 50 Q 50 80 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/></svg>">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
   @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@400;600;800;900&display=swap');
@@ -18,7 +27,12 @@
     font-family: 'Inter', sans-serif;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
+    touch-action: none;
+    overscroll-behavior: none;
+    overflow: hidden;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
   }
 
   .font-teko {
@@ -41,6 +55,7 @@
     overflow: hidden;
     box-shadow: 0 0 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5);
     position: relative;
+    touch-action: none;
   }
 
   .glow-text {
@@ -204,10 +219,11 @@
 
   let matchState = {
     rule: 'GOLDEN POINT',
-    team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 3, setScores: [6, 3, 4] },
-    team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 4, setScores: [4, 6, 3] },
-    currentSet: 2,
+    team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 3, setScores: [0, 0, 0] },
+    team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 3, setScores: [0, 0, 0] },
+    currentSet: 0,
     serverIndex: 1,
+    silverAdPlayed: false, // Track if Silver Point Advantage was already played this game
     history: []
   };
 
@@ -257,6 +273,7 @@
     matchState.team2.gameScore = 0;
     matchState.team2.setScores = [0, 0, 0];
     matchState.currentSet = 0;
+    matchState.silverAdPlayed = false;
     renderUI();
     toggleMenu(false);
   }
@@ -274,17 +291,36 @@
       winGame(teamNumber);
       return;
     } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
+      // 40-40 (Deuce)
       if (matchState.rule === 'GOLDEN POINT') {
         winGame(teamNumber);
         return;
+      } else if (matchState.rule === 'SILVER POINT') {
+        if (matchState.silverAdPlayed) {
+          // Advantage was already used this game; this is the Deciding Point
+          winGame(teamNumber);
+          return;
+        } else {
+          scoringTeam.gameScore = 4; // AD
+          matchState.silverAdPlayed = true;
+        }
       } else {
+        // Standard Advantage or Star Point
         scoringTeam.gameScore = 4; // AD
       }
     } else if (scoringTeam.gameScore === 4) {
+      // Team with AD scored again -> Win game
       winGame(teamNumber);
       return;
     } else if (opponentTeam.gameScore === 4) {
-      opponentTeam.gameScore = 3; // Deuce back
+      // Opponent had AD and scoring team won the point
+      if (matchState.rule === 'SILVER POINT') {
+        // Returned to Deuce after Advantage -> Silver Point is active for next point
+        opponentTeam.gameScore = 3;
+        // matchState.silverAdPlayed remains true!
+      } else {
+        opponentTeam.gameScore = 3; // Standard Deuce
+      }
     }
 
     renderUI();
@@ -295,6 +331,7 @@
     winningTeam.setScores[matchState.currentSet]++;
     matchState.team1.gameScore = 0;
     matchState.team2.gameScore = 0;
+    matchState.silverAdPlayed = false; // Reset for next game
     
     if (winningTeam.setScores[matchState.currentSet] >= 6) {
       if (matchState.currentSet < 2) matchState.currentSet++;
@@ -304,13 +341,30 @@
   }
 
   function saveStateForUndo() {
-    matchState.history.push(JSON.parse(JSON.stringify(matchState)));
+    // Create clean lightweight snapshot without recursive history nesting
+    const snapshot = {
+      rule: matchState.rule,
+      team1: JSON.parse(JSON.stringify(matchState.team1)),
+      team2: JSON.parse(JSON.stringify(matchState.team2)),
+      currentSet: matchState.currentSet,
+      serverIndex: matchState.serverIndex
+    };
+
+    matchState.history.push(snapshot);
+    // Keep max 30 undo steps to ensure instant speed and low RAM usage
+    if (matchState.history.length > 30) {
+      matchState.history.shift();
+    }
   }
 
   function undoLastPoint() {
     if (matchState.history.length > 0) {
       const prev = matchState.history.pop();
-      matchState = prev;
+      const currentHistory = matchState.history;
+      matchState = {
+        ...prev,
+        history: currentHistory
+      };
       renderUI();
     }
   }
@@ -335,10 +389,10 @@
     const t2p1 = document.getElementById('t2-p1');
     const t2p2 = document.getElementById('t2-p2');
 
-    if (t1p1) t1p1.innerText = matchState.team1.players[0].toUpperCase();
-    if (t1p2) t1p2.innerText = matchState.team1.players[1].toUpperCase();
-    if (t2p1) t2p1.innerText = matchState.team2.players[0].toUpperCase();
-    if (t2p2) t2p2.innerText = matchState.team2.players[1].toUpperCase();
+    if (t1p1) t1p1.innerText = (matchState.team1.players[0] || 'BEN').toUpperCase();
+    if (t1p2) t1p2.innerText = (matchState.team1.players[1] || 'REBECCA').toUpperCase();
+    if (t2p1) t2p1.innerText = (matchState.team2.players[0] || 'IAN').toUpperCase();
+    if (t2p2) t2p2.innerText = (matchState.team2.players[1] || 'SARAH').toUpperCase();
 
     // Game Scores
     const t1Score = document.getElementById('t1-score');
@@ -346,21 +400,44 @@
     if (t1Score) t1Score.innerText = pointTerms[matchState.team1.gameScore] || '0';
     if (t2Score) t2Score.innerText = pointTerms[matchState.team2.gameScore] || '0';
 
-    // Set Scores
-    const t1s1 = document.getElementById('t1-set1');
-    const t1s2 = document.getElementById('t1-set2');
-    const t1s3 = document.getElementById('t1-set3');
-    if (t1s1) t1s1.innerText = matchState.team1.setScores[0];
-    if (t1s2) t1s2.innerText = matchState.team1.setScores[1];
-    if (t1s3) t1s3.innerText = matchState.team1.setScores[2];
+    // Highlight Active Set & Render Breakdown
+    const activeSetIndex = typeof matchState.currentSet === 'number' ? matchState.currentSet : 0;
+    
+    [0, 1, 2].forEach(setIdx => {
+      const elT1 = document.getElementById(`t1-set${setIdx + 1}`);
+      const elT2 = document.getElementById(`t2-set${setIdx + 1}`);
 
-    const t2s1 = document.getElementById('t2-set1');
-    const t2s2 = document.getElementById('t2-set2');
-    const t2s3 = document.getElementById('t2-set3');
-    if (t2s1) t2s1.innerText = matchState.team2.setScores[0];
-    if (t2s2) t2s2.innerText = matchState.team2.setScores[1];
-    if (t2s3) t2s3.innerText = matchState.team2.setScores[2];
+      const scoreT1 = matchState.team1.setScores[setIdx] ?? 0;
+      const scoreT2 = matchState.team2.setScores[setIdx] ?? 0;
+
+      if (elT1) {
+        elT1.innerText = scoreT1;
+        if (setIdx === activeSetIndex) {
+          elT1.className = "text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text";
+        } else if (setIdx < activeSetIndex) {
+          elT1.className = "text-gray-300 text-2xl sm:text-3xl font-black";
+        } else {
+          elT1.className = "text-gray-600 text-xl sm:text-2xl font-black";
+        }
+      }
+
+      if (elT2) {
+        elT2.innerText = scoreT2;
+        if (setIdx === activeSetIndex) {
+          elT2.className = "text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text";
+        } else if (setIdx < activeSetIndex) {
+          elT2.className = "text-gray-300 text-2xl sm:text-3xl font-black";
+        } else {
+          elT2.className = "text-gray-600 text-xl sm:text-2xl font-black";
+        }
+      }
+    });
   }
+
+  // Prevent default watch gestures from panning/moving watch app screen
+  document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+  }, { passive: false });
 
   window.onload = function() {
     updateClock();
