@@ -82,7 +82,6 @@
 </head>
 <body class="bg-black text-white flex items-center justify-center min-h-screen m-0 p-0 overflow-hidden select-none">
 
-  <!-- MAIN WATCH CONTAINER -->
   <div class="watch-container flex flex-col justify-between relative bg-black border-4 border-gray-900">
     
     <!-- TOP HALF: TEAM 1 ZONE (Blue) -->
@@ -101,12 +100,12 @@
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
             <span id="t1-p1" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">BEN</span>
-            <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
+            <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
             <span id="t1-p2" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">REBECCA</span>
-            <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
+            <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
           </div>
 
           <!-- Team 1 Sets Overview Breakdown -->
@@ -160,12 +159,12 @@
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
             <span id="t2-p1" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">IAN</span>
-            <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
+            <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
             <span id="t2-p2" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">SARAH</span>
-            <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
+            <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
           </div>
 
           <!-- Team 2 Sets Overview Breakdown -->
@@ -182,6 +181,18 @@
 
     </div>
 
+  </div>
+
+  <!-- FIRST SERVER SELECTION MODAL -->
+  <div id="server-select-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 text-center">
+    <div class="w-full max-w-xs my-auto space-y-3">
+      <h3 class="text-base font-black text-yellow-400 tracking-wider uppercase">WHO SERVES FIRST?</h3>
+      <p class="text-[11px] text-gray-300 font-medium">Select the initial server for this match:</p>
+      
+      <div class="grid grid-cols-2 gap-2 pt-1" id="server-select-buttons">
+        <!-- Dynamically populated buttons for each player -->
+      </div>
+    </div>
   </div>
 
   <!-- END OF SET PROMPT MODAL -->
@@ -222,6 +233,11 @@
       <div id="menu-settings-view" class="space-y-3">
         <h2 class="text-sm font-black text-yellow-400 tracking-wider uppercase">MATCH SETTINGS</h2>
 
+        <!-- Save Confirmation Notification Banner -->
+        <div id="save-confirm-banner" class="hidden bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-bold py-1.5 px-2 rounded-xl animate-pulse">
+          ✓ Match saved to History!
+        </div>
+
         <!-- Rule Selector -->
         <div class="text-left space-y-1">
           <label class="text-[10px] text-gray-400 font-bold uppercase block">Scoring Rule</label>
@@ -237,7 +253,7 @@
           <label class="text-[10px] text-gray-400 font-bold uppercase block">Edit Players</label>
           <div class="grid grid-cols-2 gap-1.5">
             <input id="input-t1p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P1" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
-            <input id="input-t1p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P2" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+            <input id="input-t1p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P2" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
             <input id="input-t2p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P1" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
             <input id="input-t2p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P2" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
           </div>
@@ -247,36 +263,44 @@
         </div>
 
         <!-- Stop & Log Match Early Button -->
-        <button onclick="promptStopMatchEarly()" class="w-full bg-emerald-900/50 hover:bg-emerald-900/80 text-emerald-300 text-xs font-bold py-2 rounded-xl border border-emerald-700/60 flex items-center justify-center gap-2">
+        <button id="btn-finish-early" onclick="promptStopMatchEarly()" class="w-full bg-emerald-900/50 hover:bg-emerald-900/80 text-emerald-300 text-xs font-bold py-1.5 rounded-xl border border-emerald-700/60 flex items-center justify-center gap-2">
           <span>🏁</span>
           <span>Finish & Log Match Now</span>
         </button>
 
-        <!-- Match History Button -->
-        <button onclick="showHistoryView(true)" class="w-full bg-gray-800 hover:bg-gray-700 text-yellow-400 text-xs font-bold py-2 rounded-xl border border-gray-700 flex items-center justify-center gap-2">
-          <span>📜</span>
-          <span>Match History</span>
-        </button>
+        <!-- Compact 2-Column Grid for Bottom Action Buttons to prevent Wear OS swipe conflicts -->
+        <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+          <button onclick="showHistoryView(true)" class="bg-gray-800 hover:bg-gray-700 text-yellow-400 text-[11px] font-bold py-2 rounded-xl border border-gray-700 flex items-center justify-center gap-1">
+            <span>📜</span>
+            <span>History</span>
+          </button>
+          
+          <button onclick="resetMatchAndShowServerPrompt()" class="bg-rose-900/40 hover:bg-rose-900/70 text-rose-300 text-[11px] font-bold py-2 rounded-xl border border-rose-800/60 flex items-center justify-center gap-1">
+            <span>🔄</span>
+            <span>New Match</span>
+          </button>
+        </div>
 
-        <!-- Reset Match Button -->
-        <button onclick="resetMatch()" class="w-full bg-rose-900/40 hover:bg-rose-900/70 text-rose-300 text-xs font-bold py-2 rounded-xl border border-rose-800/60">
-          Reset Current Match
-        </button>
-
-        <!-- Close Menu Button -->
-        <button onclick="toggleMenu(false)" class="w-full bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-xl border border-gray-700">
-          Close Settings
+        <!-- Close Menu Button moved up into accessible view -->
+        <button onclick="toggleMenu(false)" class="w-full bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black py-2 rounded-xl border border-yellow-300 uppercase tracking-wide">
+          ✕ Close Settings
         </button>
       </div>
 
       <!-- HISTORY VIEW CONTAINER -->
       <div id="menu-history-view" class="hidden space-y-3">
         <h2 class="text-sm font-black text-yellow-400 tracking-wider uppercase">MATCH HISTORY</h2>
-        <div id="history-list" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto pr-1">
           <!-- Dynamically populated history cards -->
         </div>
-        <p class="text-[9px] text-gray-500 italic text-center">Long-press any match to delete it</p>
+        <p class="text-[9px] text-gray-500 italic text-center">Long-press any match to delete</p>
         
+        <!-- Head-to-Head Summary Button -->
+        <button onclick="showHeadToHeadSummary()" class="w-full bg-blue-900/60 hover:bg-blue-900/90 text-blue-300 text-xs font-bold py-2 rounded-xl border border-blue-700/60 flex items-center justify-center gap-1.5">
+          <span>📊</span>
+          <span>Team Head-to-Head Stats</span>
+        </button>
+
         <!-- Clear All History Button -->
         <button onclick="promptClearAllHistory()" class="w-full bg-rose-900/40 hover:bg-rose-900/70 text-rose-300 text-xs font-bold py-1.5 rounded-xl border border-rose-800/60">
           Clear All History
@@ -284,6 +308,17 @@
 
         <button onclick="showHistoryView(false)" class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded-xl border border-gray-700">
           Back to Settings
+        </button>
+      </div>
+
+      <!-- HEAD-TO-HEAD SUMMARY VIEW CONTAINER -->
+      <div id="menu-h2h-view" class="hidden space-y-3">
+        <h2 class="text-sm font-black text-yellow-400 tracking-wider uppercase">HEAD-TO-HEAD STATS</h2>
+        <div id="h2h-list" class="space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
+          <!-- Dynamically populated H2H cards -->
+        </div>
+        <button onclick="closeHeadToHeadSummary()" class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded-xl border border-gray-700">
+          Back to History
         </button>
       </div>
 
@@ -308,474 +343,699 @@
     </div>
   </div>
 
-<script>
-  let isEditingPlayers = false;
-  let matchTimerInterval = null;
-  let historyPressTimer = null;
-  let selectedMatchIdToDelete = null;
+  <script>
+    let isEditingPlayers = false;
+    let matchTimerInterval = null;
+    let historyPressTimer = null;
+    let selectedMatchIdToDelete = null;
+    let matchLoggedForCurrentConclusion = false;
+    let matchAlreadyLogged = false;
 
-  let matchState = {
-    rule: 'SILVER POINT',
-    team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 3, setScores: [0, 0, 0] },
-    team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 3, setScores: [0, 0, 0] },
-    currentSet: 0,
-    serverIndex: 1,
-    silverAdPlayed: false, // Track if Silver Point Advantage was already played this game
-    history: []
-  };
+    let matchState = {
+      rule: 'SILVER POINT',
+      team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 0, setScores: [0] },
+      team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 0, setScores: [0] },
+      currentSet: 0,
+      serverIndex: 0,
+      silverAdPlayed: false,
+      startTime: Date.now(),
+      history: []
+    };
 
-  const pointTerms = ['0', '15', '30', '40', 'AD'];
+    const pointTerms = ['0', '15', '30', '40', 'AD'];
 
-  function pauseUpdatesForKeyboard(isFocused) {
-    isEditingPlayers = isFocused;
-  }
+    function toggleMenu(show) {
+      const modal = document.getElementById('menu-modal');
+      if (!modal) return;
+      if (show) {
+        modal.classList.remove('hidden');
+        showHistoryView(false);
+        
+        const banner = document.getElementById('save-confirm-banner');
+        if (banner) banner.classList.add('hidden');
 
-  function updateClock() {
-    if (isEditingPlayers) return;
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const clockEl = document.getElementById('top-clock');
-    if (clockEl) clockEl.innerText = `${hours}:${minutes}`;
-
-    // Update match duration timer
-    if (matchState.startTime) {
-      const elapsedSec = Math.floor((Date.now() - matchState.startTime) / 1000);
-      const mins = Math.floor(elapsedSec / 60);
-      const timerEl = document.getElementById('match-timer');
-      if (timerEl) timerEl.innerText = `⏱ ${mins}m`;
+        const t1p1 = document.getElementById('input-t1p1');
+        const t1p2 = document.getElementById('input-t1p2');
+        const t2p1 = document.getElementById('input-t2p1');
+        const t2p2 = document.getElementById('input-t2p2');
+        if (t1p1) t1p1.value = matchState.team1.players[0] || 'BEN';
+        if (t1p2) t1p2.value = matchState.team1.players[1] || 'REBECCA';
+        if (t2p1) t2p1.value = matchState.team2.players[0] || 'IAN';
+        if (t2p2) t2p2.value = matchState.team2.players[1] || 'SARAH';
+        
+        const ruleSel = document.getElementById('rule-selector');
+        if (ruleSel) ruleSel.value = matchState.rule;
+        
+        updateFinishEarlyButtonUI();
+      } else {
+        modal.classList.add('hidden');
+      }
     }
-  }
 
-  function updateScoringRule(newRule) {
-    matchState.rule = newRule;
-    const badge = document.getElementById('active-rule-badge');
-    if (badge) badge.innerText = newRule;
-    localStorage.setItem('padel_rule', newRule);
-  }
+    function updateFinishEarlyButtonUI() {
+      const btn = document.getElementById('btn-finish-early');
+      if (!btn) return;
+      if (matchAlreadyLogged) {
+        btn.className = "w-full bg-gray-800 text-gray-400 text-xs font-bold py-1.5 rounded-xl border border-gray-700 flex items-center justify-center gap-2 cursor-not-allowed";
+        btn.innerHTML = `<span>✓</span><span>Match Already Logged</span>`;
+        btn.disabled = true;
+      } else {
+        btn.className = "w-full bg-emerald-900/50 hover:bg-emerald-900/80 text-emerald-300 text-xs font-bold py-1.5 rounded-xl border border-emerald-700/60 flex items-center justify-center gap-2 cursor-pointer";
+        btn.innerHTML = `<span>🏁</span><span>Finish & Log Match Now</span>`;
+        btn.disabled = false;
+      }
+    }
 
-  function savePlayerNames() {
-    const t1p1 = (document.getElementById('input-t1p1').value.trim() || 'BEN').toUpperCase();
-    const t1p2 = (document.getElementById('input-t1p2').value.trim() || 'REBECCA').toUpperCase();
-    const t2p1 = (document.getElementById('input-t2p1').value.trim() || 'IAN').toUpperCase();
-    const t2p2 = (document.getElementById('input-t2p2').value.trim() || 'SARAH').toUpperCase();
+    function showHistoryView(show) {
+      const settingsView = document.getElementById('menu-settings-view');
+      const historyView = document.getElementById('menu-history-view');
+      const h2hView = document.getElementById('menu-h2h-view');
+      if (settingsView && historyView && h2hView) {
+        if (show) {
+          settingsView.classList.add('hidden');
+          h2hView.classList.add('hidden');
+          historyView.classList.remove('hidden');
+          renderHistoryList();
+        } else {
+          settingsView.classList.remove('hidden');
+          historyView.classList.add('hidden');
+          h2hView.classList.add('hidden');
+        }
+      }
+    }
 
-    matchState.team1.players = [t1p1, t1p2];
-    matchState.team2.players = [t2p1, t2p2];
+    function showHeadToHeadSummary() {
+      const historyView = document.getElementById('menu-history-view');
+      const h2hView = document.getElementById('menu-h2h-view');
+      const h2hList = document.getElementById('h2h-list');
+      if (!historyView || !h2hView || !h2hList) return;
 
-    localStorage.setItem('padel_t1_p1', t1p1);
-    localStorage.setItem('padel_t1_p2', t1p2);
-    localStorage.setItem('padel_t2_p1', t2p1);
-    localStorage.setItem('padel_t2_p2', t2p2);
+      historyView.classList.add('hidden');
+      h2hView.classList.remove('hidden');
 
-    renderUI();
-    toggleMenu(false);
-  }
+      const history = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+      if (history.length === 0) {
+        h2hList.innerHTML = `<div class="text-xs text-gray-400 py-4 text-center">No matches recorded yet</div>`;
+        return;
+      }
 
-  function resetMatch() {
-    saveStateForUndo();
-    matchState.team1.gameScore = 0;
-    matchState.team1.setScores = [0];
-    matchState.team2.gameScore = 0;
-    matchState.team2.setScores = [0];
-    matchState.currentSet = 0;
-    matchState.silverAdPlayed = false;
-    matchState.startTime = Date.now();
-    renderUI();
-    toggleMenu(false);
-  }
+      const matchupStats = {};
 
-  function scorePoint(teamNumber) {
-    saveStateForUndo();
-    if (window.navigator.vibrate) window.navigator.vibrate(40);
-    
-    let scoringTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
-    let opponentTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
+      history.forEach(m => {
+        const t1 = (m.team1Name || 'TEAM 1').toUpperCase();
+        const t2 = (m.team2Name || 'TEAM 2').toUpperCase();
+        const key = [t1, t2].sort().join(' vs ');
 
-    if (scoringTeam.gameScore < 3) {
-      scoringTeam.gameScore++;
-    } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore < 3) {
-      winGame(teamNumber);
-      return;
-    } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
-      // 40-40 Deuce handling
+        if (!matchupStats[key]) {
+          matchupStats[key] = {
+            teamA: t1,
+            teamB: t2,
+            winsA: 0,
+            winsB: 0,
+            totalMatches: 0,
+            totalGamesA: 0,
+            totalGamesB: 0,
+            playerStats: {}
+          };
+        }
+
+        matchupStats[key].totalMatches++;
+
+        const setsStr = m.sets || '';
+        const setPairs = setsStr.split(', ');
+        let setsWonA = 0;
+        let setsWonB = 0;
+
+        // Parse set scores for total games and serve breakdown if available
+        setPairs.forEach(s => {
+          const parts = s.split('-');
+          if (parts.length === 2) {
+            const scoreA = parseInt(parts[0]) || 0;
+            const scoreB = parseInt(parts[1]) || 0;
+            setsWonA += (scoreA > scoreB ? 1 : 0);
+            setsWonB += (scoreB > scoreA ? 1 : 0);
+            matchupStats[key].totalGamesA += scoreA;
+            matchupStats[key].totalGamesB += scoreB;
+          }
+        });
+
+        const isTeamAFirst = (matchupStats[key].teamA === t1);
+        if (setsWonA > setsWonB) {
+          if (isTeamAFirst) matchupStats[key].winsA++;
+          else matchupStats[key].winsB++;
+        } else if (setsWonB > setsWonA) {
+          if (isTeamAFirst) matchupStats[key].winsB++;
+          else matchupStats[key].winsA++;
+        }
+
+        // Aggregate player serve stats if recorded in match history
+        if (m.playerServeStats) {
+          Object.keys(m.playerServeStats).forEach(player => {
+            if (!matchupStats[key].playerStats[player]) {
+              matchupStats[key].playerStats[player] = { wonOnServe: 0, lostOnServe: 0 };
+            }
+            matchupStats[key].playerStats[player].wonOnServe += (m.playerServeStats[player].wonOnServe || 0);
+            matchupStats[key].playerStats[player].lostOnServe += (m.playerServeStats[player].lostOnServe || 0);
+          });
+        }
+      });
+
+      h2hList.innerHTML = Object.values(matchupStats).map(stat => {
+        let playerStatsHtml = '';
+        if (Object.keys(stat.playerStats).length > 0) {
+          playerStatsHtml = `<div class="mt-2 pt-1 border-t border-gray-800 text-[10px] text-gray-300 space-y-0.5">
+            <div class="font-bold text-yellow-400">Serve Win/Loss Breakdown:</div>` +
+            Object.entries(stat.playerStats).map(([plr, st]) => `
+              <div class="flex justify-between">
+                <span>${plr}:</span>
+                <span class="font-mono text-emerald-400">${st.wonOnServe} won</span> / <span class="font-mono text-rose-400">${st.lostOnServe} lost</span>
+              </div>
+            `).join('') + `</div>`;
+        } else {
+          playerStatsHtml = `<div class="mt-1 text-[9px] text-gray-500 italic">Serve stats tracked in live matches</div>`;
+        }
+
+        return `
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-2.5 space-y-1">
+            <div class="text-[10px] text-yellow-400 font-bold truncate">${stat.teamA} vs ${stat.teamB}</div>
+            <div class="flex justify-between items-center text-xs font-black text-white pt-1 border-t border-gray-800">
+              <span>Match Wins: ${stat.winsA} - ${stat.winsB}</span>
+              <span class="text-[10px] text-gray-400">Total: ${stat.totalMatches}</span>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-gray-300">
+              <span>Total Games Won:</span>
+              <span class="font-mono">${stat.totalGamesA} - ${stat.totalGamesB}</span>
+            </div>
+            ${playerStatsHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function closeHeadToHeadSummary() {
+      showHistoryView(true);
+    }
+
+    function scorePoint(teamNumber) {
+      saveStateForUndo();
+
+      const currentTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
+      const opponentTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
+
+      if (currentTeam.gameScore < 3) {
+        currentTeam.gameScore++;
+        renderUI();
+        return;
+      }
+
+      if (currentTeam.gameScore === 3 && opponentTeam.gameScore < 3) {
+        winGame(teamNumber);
+        return;
+      }
+
       if (matchState.rule === 'GOLDEN POINT') {
         winGame(teamNumber);
         return;
-      } else if (matchState.rule === 'SILVER POINT') {
-        if (matchState.silverAdPlayed) {
-          // Advantage point was already played; this is the Deciding Point
+      }
+
+      if (matchState.rule === 'STANDARD DEUCE') {
+        if (currentTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
+          currentTeam.gameScore = 4;
+        } else if (currentTeam.gameScore === 4) {
           winGame(teamNumber);
-          return;
-        } else {
-          scoringTeam.gameScore = 4; // AD
-          matchState.silverAdPlayed = true;
+        } else if (opponentTeam.gameScore === 4) {
+          opponentTeam.gameScore = 3;
         }
-      } else {
-        // Standard Advantage
-        scoringTeam.gameScore = 4; // AD
+        renderUI();
+        return;
       }
-    } else if (scoringTeam.gameScore === 4) {
-      winGame(teamNumber);
-      return;
-    } else if (opponentTeam.gameScore === 4) {
+
       if (matchState.rule === 'SILVER POINT') {
-        opponentTeam.gameScore = 3; // Reverts to 40-40, silver point active
-      } else {
-        opponentTeam.gameScore = 3; // Standard Deuce
+        if (currentTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
+          if (matchState.silverAdPlayed) {
+            winGame(teamNumber);
+          } else {
+            currentTeam.gameScore = 4;
+            matchState.silverAdPlayed = true;
+          }
+        } else if (currentTeam.gameScore === 4) {
+          winGame(teamNumber);
+        } else if (opponentTeam.gameScore === 4) {
+          opponentTeam.gameScore = 3;
+        }
+        renderUI();
+        return;
       }
     }
 
-    renderUI();
-  }
-
-  function winGame(teamNumber) {
-    let winningTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
-    let losingTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
-    
-    const currSetIdx = matchState.currentSet;
-    winningTeam.setScores[currSetIdx] = (winningTeam.setScores[currSetIdx] || 0) + 1;
-    
-    matchState.team1.gameScore = 0;
-    matchState.team2.gameScore = 0;
-    matchState.silverAdPlayed = false;
-
-    const winGames = winningTeam.setScores[currSetIdx];
-    const loseGames = losingTeam.setScores[currSetIdx] || 0;
-
-    // Check if set is completed (e.g. 6-4, 6-3, 7-5)
-    if (winGames >= 6 && (winGames - loseGames >= 2)) {
-      promptEndSet(teamNumber);
-      return;
-    }
-
-    renderUI();
-  }
-
-  function promptEndSet(winningTeamNum) {
-    const currSetIdx = matchState.currentSet;
-    const winTeamName = winningTeamNum === 1 ? "Team 1" : "Team 2";
-    const scoreText = `${matchState.team1.setScores[currSetIdx]} - ${matchState.team2.setScores[currSetIdx]}`;
-    
-    const elapsedMins = Math.max(1, Math.floor((Date.now() - matchState.startTime) / 60000));
-    const estCalories = Math.round(elapsedMins * 8.5); // ~8.5 kcal/min padel estimate
-
-    document.getElementById('set-winner-title').innerText = `${winTeamName} WINS SET ${currSetIdx + 1}!`;
-    document.getElementById('set-winner-subtitle').innerText = `Final Set Score: ${scoreText}`;
-    document.getElementById('prompt-match-time').innerText = `${elapsedMins} mins`;
-    document.getElementById('prompt-calories').innerText = `${estCalories} kcal`;
-
-    document.getElementById('end-set-modal').classList.remove('hidden');
-  }
-
-  function continueNextSet() {
-    document.getElementById('end-set-modal').classList.add('hidden');
-    matchState.currentSet++;
-    matchState.team1.setScores.push(0);
-    matchState.team2.setScores.push(0);
-    renderUI();
-  }
-
-  function finishAndLogMatch() {
-    document.getElementById('end-set-modal').classList.add('hidden');
-    logMatchHistory();
-    resetMatch();
-  }
-
-  function logMatchHistory() {
-    const elapsedMins = Math.max(1, Math.floor((Date.now() - matchState.startTime) / 60000));
-    const estCalories = Math.round(elapsedMins * 8.5);
-    
-    const setSummaries = [];
-    for (let i = 0; i <= matchState.currentSet; i++) {
-      setSummaries.push(`${matchState.team1.setScores[i] || 0}-${matchState.team2.setScores[i] || 0}`);
-    }
-
-    // Determine winning team based on set wins
-    let t1SetsWon = 0;
-    let t2SetsWon = 0;
-    for (let i = 0; i <= matchState.currentSet; i++) {
-      const s1 = matchState.team1.setScores[i] || 0;
-      const s2 = matchState.team2.setScores[i] || 0;
-      if (s1 > s2) t1SetsWon++;
-      else if (s2 > s1) t2SetsWon++;
-    }
-    const winningTeam = t1SetsWon >= t2SetsWon ? matchState.team1.players.join(' & ') : matchState.team2.players.join(' & ');
-
-    const logEntry = {
-      id: Date.now(),
-      date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      team1Name: matchState.team1.players.join(' & '),
-      team2Name: matchState.team2.players.join(' & '),
-      sets: setSummaries.join(', '),
-      duration: `${elapsedMins}m`,
-      calories: `${estCalories}`,
-      winner: winningTeam
-    };
-
-    let existingLogs = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
-    existingLogs.unshift(logEntry);
-    if (existingLogs.length > 20) existingLogs.pop(); // keep last 20 matches
-
-    localStorage.setItem('padel_match_history', JSON.stringify(existingLogs));
-  }
-
-  function showHistoryView(show) {
-    const settingsView = document.getElementById('menu-settings-view');
-    const historyView = document.getElementById('menu-history-view');
-    if (settingsView) settingsView.classList.toggle('hidden', show);
-    if (historyView) historyView.classList.toggle('hidden', !show);
-    if (show) renderHistoryList();
-  }
-
-  function renderHistoryList() {
-    const historyContainer = document.getElementById('history-list');
-    if (!historyContainer) return;
-
-    const savedHistory = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
-    
-    if (savedHistory.length === 0) {
-      historyContainer.innerHTML = `<div class="text-xs text-gray-500 py-4">No completed matches saved yet.</div>`;
-      return;
-    }
-
-    historyContainer.innerHTML = savedHistory.map(match => `
-      <div 
-        onmousedown="startHistoryLongPress('${match.id}')" 
-        onmouseup="cancelHistoryLongPress()" 
-        onmouseleave="cancelHistoryLongPress()"
-        ontouchstart="startHistoryLongPress('${match.id}')" 
-        ontouchend="cancelHistoryLongPress()"
-        ontouchcancel="cancelHistoryLongPress()"
-        class="bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-left active:scale-95 transition-transform cursor-pointer select-none relative overflow-hidden"
-      >
-        <div class="flex items-center justify-between text-[10px] text-gray-400 border-b border-gray-800/80 pb-1 mb-1.5">
-          <span>${match.date || ''} ${match.time ? '• ' + match.time : ''}</span>
-          <span class="text-yellow-400 font-mono">⏱ ${match.duration || '0m'}</span>
-        </div>
-        <div class="flex items-center justify-between text-xs font-bold mb-1">
-          <span class="text-blue-400 truncate max-w-[65%]">${match.team1Name || 'Team 1'}</span>
-        </div>
-        <div class="flex items-center justify-between text-xs font-bold mb-1.5">
-          <span class="text-rose-400 truncate max-w-[65%]">${match.team2Name || 'Team 2'}</span>
-          <span class="text-white font-mono">${match.sets || ''}</span>
-        </div>
-        <div class="flex items-center justify-between text-[9px] text-gray-400 pt-1 border-t border-gray-800/50">
-          <span>🔥 ~${match.calories || 0} kcal</span>
-          <span class="text-yellow-400 font-bold uppercase">${match.winner || 'MATCH'}</span>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function startHistoryLongPress(matchId) {
-    cancelHistoryLongPress();
-    historyPressTimer = setTimeout(() => {
-      openMatchActionModal(matchId);
-    }, 600); // 600ms long press threshold
-  }
-
-  function cancelHistoryLongPress() {
-    if (historyPressTimer) {
-      clearTimeout(historyPressTimer);
-      historyPressTimer = null;
-    }
-  }
-
-  function openMatchActionModal(matchId) {
-    selectedMatchIdToDelete = matchId;
-    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
-    
-    const titleEl = document.getElementById('action-modal-title');
-    const descEl = document.getElementById('action-modal-desc');
-    const btnTextEl = document.getElementById('action-modal-confirm-text');
-    const btnEl = document.getElementById('action-modal-confirm-btn');
-
-    if (titleEl) titleEl.innerText = "DELETE MATCH";
-    if (descEl) descEl.innerText = "Are you sure you want to delete this match record?";
-    if (btnTextEl) btnTextEl.innerText = "Delete This Match";
-    if (btnEl) btnEl.onclick = confirmDeleteSelectedMatch;
-
-    document.getElementById('match-action-modal').classList.remove('hidden');
-  }
-
-  function promptStopMatchEarly() {
-    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
-
-    const titleEl = document.getElementById('action-modal-title');
-    const descEl = document.getElementById('action-modal-desc');
-    const btnTextEl = document.getElementById('action-modal-confirm-text');
-    const btnEl = document.getElementById('action-modal-confirm-btn');
-
-    if (titleEl) titleEl.innerText = "FINISH MATCH EARLY";
-    if (descEl) descEl.innerText = "End current match now, save existing scores to Match History, and start a new match?";
-    if (btnTextEl) btnTextEl.innerText = "Save & Finish Match";
-    if (btnEl) btnEl.onclick = confirmStopMatchEarly;
-
-    document.getElementById('match-action-modal').classList.remove('hidden');
-  }
-
-  function confirmStopMatchEarly() {
-    closeMatchActionModal();
-    logMatchHistory();
-    resetMatch();
-  }
-
-  function promptClearAllHistory() {
-    selectedMatchIdToDelete = null;
-    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
-
-    const titleEl = document.getElementById('action-modal-title');
-    const descEl = document.getElementById('action-modal-desc');
-    const btnTextEl = document.getElementById('action-modal-confirm-text');
-    const btnEl = document.getElementById('action-modal-confirm-btn');
-
-    if (titleEl) titleEl.innerText = "CLEAR ALL HISTORY";
-    if (descEl) descEl.innerText = "Are you sure you want to permanently delete ALL match history?";
-    if (btnTextEl) btnTextEl.innerText = "Delete All History";
-    if (btnEl) btnEl.onclick = confirmClearAllHistory;
-
-    document.getElementById('match-action-modal').classList.remove('hidden');
-  }
-
-  function confirmClearAllHistory() {
-    localStorage.removeItem('padel_match_history');
-    closeMatchActionModal();
-    renderHistoryList();
-  }
-
-  function closeMatchActionModal() {
-    selectedMatchIdToDelete = null;
-    document.getElementById('match-action-modal').classList.add('hidden');
-  }
-
-  function confirmDeleteSelectedMatch() {
-    if (!selectedMatchIdToDelete) return;
-
-    let savedHistory = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
-    savedHistory = savedHistory.filter(m => String(m.id) !== String(selectedMatchIdToDelete));
-    
-    localStorage.setItem('padel_match_history', JSON.stringify(savedHistory));
-    
-    closeMatchActionModal();
-    renderHistoryList();
-  }
-
-  function clearMatchHistory() {
-    localStorage.removeItem('padel_match_history');
-    renderHistoryList();
-  }
-
-  function saveStateForUndo() {
-    const snapshot = {
-      rule: matchState.rule,
-      team1: JSON.parse(JSON.stringify(matchState.team1)),
-      team2: JSON.parse(JSON.stringify(matchState.team2)),
-      currentSet: matchState.currentSet,
-      silverAdPlayed: matchState.silverAdPlayed,
-      startTime: matchState.startTime
-    };
-
-    matchState.history.push(snapshot);
-    if (matchState.history.length > 30) matchState.history.shift();
-  }
-
-  function undoLastPoint() {
-    if (matchState.history.length > 0) {
-      const prev = matchState.history.pop();
-      const currentHistory = matchState.history;
-      matchState = {
-        ...prev,
-        history: currentHistory
-      };
+    function undoLastPoint() {
+      if (matchState.history.length === 0) return;
+      const previousState = matchState.history.pop();
+      matchState.rule = previousState.rule;
+      matchState.team1 = previousState.team1;
+      matchState.team2 = previousState.team2;
+      matchState.currentSet = previousState.currentSet;
+      matchState.serverIndex = previousState.serverIndex;
+      matchState.silverAdPlayed = previousState.silverAdPlayed;
+      matchState.startTime = previousState.startTime;
+      if (matchState.playerServeStats) {
+        matchState.playerServeStats = previousState.playerServeStats;
+      }
+      matchAlreadyLogged = false;
       renderUI();
     }
-  }
 
-  function toggleMenu(show) {
-    const menuModal = document.getElementById('menu-modal');
-    if (menuModal) menuModal.classList.toggle('hidden', !show);
-    if (show) {
-      showHistoryView(false);
-      const inputT1P1 = document.getElementById('input-t1p1');
-      const inputT1P2 = document.getElementById('input-t1p2');
-      const inputT2P1 = document.getElementById('input-t2p1');
-      const inputT2P2 = document.getElementById('input-t2p2');
-      const ruleSelector = document.getElementById('rule-selector');
+    function promptEndSet(winningTeamNumber) {
+      if (matchAlreadyLogged) return;
+      if (!matchLoggedForCurrentConclusion) {
+        logMatchHistory();
+        matchLoggedForCurrentConclusion = true;
+        matchAlreadyLogged = true;
+        updateFinishEarlyButtonUI();
+      }
+      
+      const winnerName = winningTeamNumber === 1 
+        ? `${matchState.team1.players.join(' & ')}` 
+        : `${matchState.team2.players.join(' & ')}`;
+      
+      const setWinnerTitle = document.getElementById('set-winner-title');
+      const setWinnerSub = document.getElementById('set-winner-subtitle');
+      const promptMatchTime = document.getElementById('prompt-match-time');
+      const promptCalories = document.getElementById('prompt-calories');
 
-      if (inputT1P1) inputT1P1.value = matchState.team1.players[0] || '';
-      if (inputT1P2) inputT1P2.value = matchState.team1.players[1] || '';
-      if (inputT2P1) inputT2P1.value = matchState.team2.players[0] || '';
-      if (inputT2P2) inputT2P2.value = matchState.team2.players[1] || '';
-      if (ruleSelector) ruleSelector.value = matchState.rule;
+      const elapsedSec = Math.floor((Date.now() - (matchState.startTime || Date.now())) / 1000);
+      const mins = Math.max(1, Math.floor(elapsedSec / 60));
+      const calories = Math.round(mins * 8.5);
+
+      if (setWinnerTitle) setWinnerTitle.innerText = `SET ${matchState.currentSet + 1} WON!`;
+      if (setWinnerSub) setWinnerSub.innerText = `${winnerName} wins the set`;
+      if (promptMatchTime) promptMatchTime.innerText = `${mins}m`;
+      if (promptCalories) promptCalories.innerText = `${calories} kcal`;
+
+      const endSetModal = document.getElementById('end-set-modal');
+      if (endSetModal) endSetModal.classList.remove('hidden');
     }
-  }
 
-  function renderUI() {
-    const activeRuleBadge = document.getElementById('active-rule-badge');
-    if (activeRuleBadge) activeRuleBadge.innerText = matchState.rule;
-    
-    const t1p1 = document.getElementById('t1-p1');
-    const t1p2 = document.getElementById('t1-p2');
-    const t2p1 = document.getElementById('t2-p1');
-    const t2p2 = document.getElementById('t2-p2');
+    function continueNextSet() {
+      matchState.currentSet++;
+      matchState.team1.setScores[matchState.currentSet] = 0;
+      matchState.team2.setScores[matchState.currentSet] = 0;
+      matchState.team1.gameScore = 0;
+      matchState.team2.gameScore = 0;
+      matchState.silverAdPlayed = false;
+      matchLoggedForCurrentConclusion = false;
+      matchAlreadyLogged = false;
+      updateFinishEarlyButtonUI();
 
-    if (t1p1) t1p1.innerText = (matchState.team1.players[0] || 'BEN').toUpperCase();
-    if (t1p2) t1p2.innerText = (matchState.team1.players[1] || 'REBECCA').toUpperCase();
-    if (t2p1) t2p1.innerText = (matchState.team2.players[0] || 'IAN').toUpperCase();
-    if (t2p2) t2p2.innerText = (matchState.team2.players[1] || 'SARAH').toUpperCase();
+      const endSetModal = document.getElementById('end-set-modal');
+      if (endSetModal) endSetModal.classList.add('hidden');
+      renderUI();
+    }
 
-    // Game Scores
-    const t1Score = document.getElementById('t1-score');
-    const t2Score = document.getElementById('t2-score');
-    if (t1Score) t1Score.innerText = pointTerms[matchState.team1.gameScore] || '0';
-    if (t2Score) t2Score.innerText = pointTerms[matchState.team2.gameScore] || '0';
+    function finishAndLogMatch() {
+      const endSetModal = document.getElementById('end-set-modal');
+      if (endSetModal) endSetModal.classList.add('hidden');
+      resetMatchStateOnly();
+      toggleMenu(true);
+    }
 
-    // Update Context Status
-    const contextStatus = document.getElementById('context-status');
-    if (contextStatus) contextStatus.innerText = `SET ${matchState.currentSet + 1}`;
+    function promptStopMatchEarly() {
+      if (matchAlreadyLogged) return;
+      
+      logMatchHistory();
+      matchAlreadyLogged = true;
+      updateFinishEarlyButtonUI();
 
-    // Dynamic Set Containers (supports unlimited dynamic sets)
-    const t1SetContainer = document.getElementById('t1-set-container');
-    const t2SetContainer = document.getElementById('t2-set-container');
+      const banner = document.getElementById('save-confirm-banner');
+      if (banner) {
+        banner.classList.remove('hidden');
+        setTimeout(() => {
+          if (banner) banner.classList.add('hidden');
+        }, 4000);
+      }
+    }
 
-    if (t1SetContainer && t2SetContainer) {
-      let htmlT1 = '';
-      let htmlT2 = '';
+    function resetMatchStateOnly() {
+      saveStateForUndo();
+      matchState.team1.gameScore = 0;
+      matchState.team1.setScores = [0];
+      matchState.team2.gameScore = 0;
+      matchState.team2.setScores = [0];
+      matchState.currentSet = 0;
+      matchState.silverAdPlayed = false;
+      matchLoggedForCurrentConclusion = false;
+      matchAlreadyLogged = false;
+      matchState.startTime = Date.now();
+      matchState.playerServeStats = {};
+      updateFinishEarlyButtonUI();
+      renderUI();
+    }
 
+    function resetMatchAndShowServerPrompt() {
+      resetMatchStateOnly();
+      toggleMenu(false);
+      promptFirstServer();
+    }
+
+    function logMatchHistory() {
+      if (matchAlreadyLogged) return;
+      
+      let hasValidPointsOrSets = false;
       for (let i = 0; i <= matchState.currentSet; i++) {
-        const score1 = matchState.team1.setScores[i] ?? 0;
-        const score2 = matchState.team2.setScores[i] ?? 0;
-
-        const isCurrent = (i === matchState.currentSet);
-        const styleClass = isCurrent 
-          ? "text-[var(--neon-yellow)] text-2xl sm:text-3xl font-black glow-text"
-          : "text-gray-300 text-lg sm:text-xl font-black";
-
-        htmlT1 += `<span class="${styleClass}">${score1}</span>`;
-        htmlT2 += `<span class="${styleClass}">${score2}</span>`;
+        const s1 = matchState.team1.setScores[i] ?? 0;
+        const s2 = matchState.team2.setScores[i] ?? 0;
+        if (s1 > 0 || s2 > 0) {
+          hasValidPointsOrSets = true;
+          break;
+        }
       }
 
-      t1SetContainer.innerHTML = htmlT1;
-      t2SetContainer.innerHTML = htmlT2;
+      if (!hasValidPointsOrSets) return;
+
+      const elapsedSec = Math.floor((Date.now() - (matchState.startTime || Date.now())) / 1000);
+      const mins = Math.max(1, Math.floor(elapsedSec / 60));
+      const calories = Math.round(mins * 8.5);
+
+      let setScoreStrings = [];
+      for (let i = 0; i <= matchState.currentSet; i++) {
+        const s1 = matchState.team1.setScores[i] ?? 0;
+        const s2 = matchState.team2.setScores[i] ?? 0;
+        setScoreStrings.push(`${s1}-${s2}`);
+      }
+
+      const matchRecord = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+        team1Name: `${matchState.team1.players[0] || 'BEN'}/${matchState.team1.players[1] || 'REBECCA'}`,
+        team2Name: `${matchState.team2.players[0] || 'IAN'}/${matchState.team2.players[1] || 'SARAH'}`,
+        sets: setScoreStrings.join(', '),
+        duration: `${mins}m`,
+        calories: `${calories} kcal`,
+        rule: matchState.rule,
+        playerServeStats: matchState.playerServeStats || {}
+      };
+
+      const existingHistory = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+      existingHistory.unshift(matchRecord);
+      localStorage.setItem('padel_match_history', JSON.stringify(existingHistory));
     }
-  }
 
-  // Prevent Watch UI touch panning / dragging completely
-  document.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-  }, { passive: false });
+    function renderHistoryList() {
+      const listEl = document.getElementById('history-list');
+      if (!listEl) return;
 
-  window.onload = function() {
-    updateClock();
-    setInterval(updateClock, 10000);
+      const history = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+      if (history.length === 0) {
+        listEl.innerHTML = `<div class="text-xs text-gray-400 py-4">No logged matches yet</div>`;
+        return;
+      }
 
-    matchState.team1.players[0] = (localStorage.getItem('padel_t1_p1') || 'BEN').toUpperCase();
-    matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'REBECCA').toUpperCase();
-    matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'IAN').toUpperCase();
-    matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SARAH').toUpperCase();
-    matchState.rule = localStorage.getItem('padel_rule') || 'SILVER POINT';
-    renderUI();
-  };
-</script>
+      listEl.innerHTML = history.map(m => `
+        <div 
+          ontouchstart="startHistoryPress(${m.id})" 
+          ontouchend="cancelHistoryPress()" 
+          onmousedown="startHistoryPress(${m.id})" 
+          onmouseup="cancelHistoryPress()"
+          class="bg-gray-900 border border-gray-800 rounded-xl p-2 text-left space-y-1 active:bg-gray-800 cursor-pointer"
+        >
+          <div class="flex justify-between text-[10px] text-yellow-400 font-bold">
+            <span>${m.date || ''}</span>
+            <span>${m.duration || ''} • ${m.calories || ''}</span>
+          </div>
+          <div class="text-xs font-bold text-white leading-tight">
+            ${m.team1Name || 'TEAM 1'} vs ${m.team2Name || 'TEAM 2'}
+          </div>
+          <div class="flex justify-between text-xs font-black text-[var(--neon-yellow)]">
+            <span>SETS: ${m.sets || '0-0'}</span>
+            <span class="text-[9px] text-gray-400 font-semibold uppercase">${m.rule || 'SILVER POINT'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function startHistoryPress(id) {
+      selectedMatchIdToDelete = id;
+      historyPressTimer = setTimeout(() => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        showMatchActionModal('DELETE MATCH', 'Delete this match entry from history?', true);
+      }, 600);
+    }
+
+    function cancelHistoryPress() {
+      if (historyPressTimer) clearTimeout(historyPressTimer);
+    }
+
+    function promptClearAllHistory() {
+      selectedMatchIdToDelete = 'ALL';
+      showMatchActionModal('CLEAR ALL HISTORY', 'Are you sure you want to permanently delete ALL match history?', false);
+    }
+
+    function showMatchActionModal(title, desc, isSingle) {
+      const modal = document.getElementById('match-action-modal');
+      const titleEl = document.getElementById('action-modal-title');
+      const descEl = document.getElementById('action-modal-desc');
+      const confirmTxt = document.getElementById('action-modal-confirm-text');
+
+      if (titleEl) titleEl.innerText = title;
+      if (descEl) descEl.innerText = desc;
+      if (confirmTxt) confirmTxt.innerText = isSingle ? 'Delete This Match' : 'Delete All History';
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeMatchActionModal() {
+      const modal = document.getElementById('match-action-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmDeleteSelectedMatch() {
+      if (selectedMatchIdToDelete === 'ALL') {
+        localStorage.removeItem('padel_match_history');
+      } else if (selectedMatchIdToDelete) {
+        let history = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+        history = history.filter(m => m.id !== selectedMatchIdToDelete);
+        localStorage.setItem('padel_match_history', JSON.stringify(history));
+      }
+      closeMatchActionModal();
+      renderHistoryList();
+    }
+
+    function promptFirstServer() {
+      const container = document.getElementById('server-select-buttons');
+      if (!container) return;
+
+      const p1 = matchState.team1.players[0] || 'BEN';
+      const p2 = matchState.team1.players[1] || 'REBECCA';
+      const p3 = matchState.team2.players[0] || 'IAN';
+      const p4 = matchState.team2.players[1] || 'SARAH';
+
+      container.innerHTML = `
+        <button onclick="setInitialServer(0)" class="bg-blue-900/60 border border-blue-500 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
+          ${p1}
+        </button>
+        <button onclick="setInitialServer(2)" class="bg-blue-900/60 border border-blue-500 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
+          ${p2}
+        </button>
+        <button onclick="setInitialServer(1)" class="bg-rose-900/60 border border-rose-500 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
+          ${p3}
+        </button>
+        <button onclick="setInitialServer(3)" class="bg-rose-900/60 border border-rose-500 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
+          ${p4}
+        </button>
+      `;
+
+      document.getElementById('server-select-modal').classList.remove('hidden');
+    }
+
+    function setInitialServer(index) {
+      matchState.serverIndex = index;
+      document.getElementById('server-select-modal').classList.add('hidden');
+      renderUI();
+    }
+
+    function pauseUpdatesForKeyboard(isFocused) {
+      isEditingPlayers = isFocused;
+    }
+
+    function updateClock() {
+      if (isEditingPlayers) return;
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const clockEl = document.getElementById('top-clock');
+      if (clockEl) clockEl.innerText = `${hours}:${minutes}`;
+
+      if (matchState.startTime) {
+        const elapsedSec = Math.floor((Date.now() - matchState.startTime) / 1000);
+        const mins = Math.floor(elapsedSec / 60);
+        const timerEl = document.getElementById('match-timer');
+        if (timerEl) timerEl.innerText = `⏱ ${mins}m`;
+      }
+    }
+
+    function updateScoringRule(newRule) {
+      matchState.rule = newRule;
+      const badge = document.getElementById('active-rule-badge');
+      if (badge) badge.innerText = newRule;
+      localStorage.setItem('padel_rule', newRule);
+    }
+
+    function savePlayerNames() {
+      const t1p1 = (document.getElementById('input-t1p1').value.trim() || 'BEN').toUpperCase();
+      const t1p2 = (document.getElementById('input-t1p2').value.trim() || 'REBECCA').toUpperCase();
+      const t2p1 = (document.getElementById('input-t2p1').value.trim() || 'IAN').toUpperCase();
+      const t2p2 = (document.getElementById('input-t2p2').value.trim() || 'SARAH').toUpperCase();
+
+      matchState.team1.players = [t1p1, t1p2];
+      matchState.team2.players = [t2p1, t2p2];
+
+      localStorage.setItem('padel_t1_p1', t1p1);
+      localStorage.setItem('padel_t1_p2', t1p2);
+      localStorage.setItem('padel_t2_p1', t2p1);
+      localStorage.setItem('padel_t2_p2', t2p2);
+
+      renderUI();
+      toggleMenu(false);
+    }
+
+    function winGame(teamNumber) {
+      let winningTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
+      let losingTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
+      
+      const currSetIdx = matchState.currentSet;
+      winningTeam.setScores[currSetIdx] = (winningTeam.setScores[currSetIdx] || 0) + 1;
+      
+      // Track serve performance stats for head-to-head analysis
+      if (!matchState.playerServeStats) matchState.playerServeStats = {};
+      const servingPlayerMap = {
+        0: matchState.team1.players[0],
+        1: matchState.team2.players[0],
+        2: matchState.team1.players[1],
+        3: matchState.team2.players[1]
+      };
+      const currentServerName = servingPlayerMap[matchState.serverIndex] || 'UNKNOWN';
+      const servingTeamIndex = (matchState.serverIndex === 0 || matchState.serverIndex === 2) ? 1 : 2;
+
+      if (!matchState.playerServeStats[currentServerName]) {
+        matchState.playerServeStats[currentServerName] = { wonOnServe: 0, lostOnServe: 0 };
+      }
+
+      if (servingTeamIndex === teamNumber) {
+        matchState.playerServeStats[currentServerName].wonOnServe++;
+      } else {
+        matchState.playerServeStats[currentServerName].lostOnServe++;
+      }
+
+      matchState.team1.gameScore = 0;
+      matchState.team2.gameScore = 0;
+      matchState.silverAdPlayed = false;
+
+      matchState.serverIndex = (matchState.serverIndex + 1) % 4;
+
+      const winGames = winningTeam.setScores[currSetIdx];
+      const loseGames = losingTeam.setScores[currSetIdx] || 0;
+
+      if (winGames >= 6 && (winGames - loseGames >= 2)) {
+        promptEndSet(teamNumber);
+        return;
+      }
+
+      renderUI();
+    }
+
+    function saveStateForUndo() {
+      const snapshot = {
+        rule: matchState.rule,
+        team1: { name: matchState.team1.name, players: [...matchState.team1.players], gameScore: matchState.team1.gameScore, setScores: [...matchState.team1.setScores] },
+        team2: { name: matchState.team2.name, players: [...matchState.team2.players], gameScore: matchState.team2.gameScore, setScores: [...matchState.team2.setScores] },
+        currentSet: matchState.currentSet,
+        serverIndex: matchState.serverIndex,
+        silverAdPlayed: matchState.silverAdPlayed,
+        startTime: matchState.startTime,
+        playerServeStats: JSON.parse(JSON.stringify(matchState.playerServeStats || {}))
+      };
+
+      matchState.history.push(snapshot);
+      if (matchState.history.length > 30) matchState.history.shift();
+    }
+
+    function renderUI() {
+      const activeRuleBadge = document.getElementById('active-rule-badge');
+      if (activeRuleBadge) activeRuleBadge.innerText = matchState.rule;
+      
+      const t1p1 = document.getElementById('t1-p1');
+      const t1p2 = document.getElementById('t1-p2');
+      const t2p1 = document.getElementById('t2-p1');
+      const t2p2 = document.getElementById('t2-p2');
+
+      if (t1p1) t1p1.innerText = (matchState.team1.players[0] || 'BEN').toUpperCase();
+      if (t1p2) t1p2.innerText = (matchState.team1.players[1] || 'REBECCA').toUpperCase();
+      if (t2p1) t2p1.innerText = (matchState.team2.players[0] || 'IAN').toUpperCase();
+      if (t2p2) t2p2.innerText = (matchState.team2.players[1] || 'SARAH').toUpperCase();
+
+      const serveBadges = [
+        document.getElementById('t1-p1-serve'),
+        document.getElementById('t2-p1-serve'),
+        document.getElementById('t1-p2-serve'),
+        document.getElementById('t2-p2-serve')
+      ];
+
+      serveBadges.forEach((badge, idx) => {
+        if (badge) {
+          badge.innerText = 'S';
+          if (idx === matchState.serverIndex) {
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        }
+      });
+
+      const t1Score = document.getElementById('t1-score');
+      const t2Score = document.getElementById('t2-score');
+      if (t1Score) t1Score.innerText = pointTerms[matchState.team1.gameScore] || '0';
+      if (t2Score) t2Score.innerText = pointTerms[matchState.team2.gameScore] || '0';
+
+      const contextStatus = document.getElementById('context-status');
+      if (contextStatus) contextStatus.innerText = `SET ${matchState.currentSet + 1}`;
+
+      const t1SetContainer = document.getElementById('t1-set-container');
+      const t2SetContainer = document.getElementById('t2-set-container');
+
+      if (t1SetContainer && t2SetContainer) {
+        let htmlT1 = '';
+        let htmlT2 = '';
+
+        for (let i = 0; i <= matchState.currentSet; i++) {
+          const score1 = matchState.team1.setScores[i] ?? 0;
+          const score2 = matchState.team2.setScores[i] ?? 0;
+
+          const isCurrent = (i === matchState.currentSet);
+          const styleClass = isCurrent 
+            ? "text-[var(--neon-yellow)] text-2xl sm:text-3xl font-black glow-text"
+            : "text-gray-300 text-lg sm:text-xl font-black";
+
+          htmlT1 += `<span class="${styleClass}">${score1}</span>`;
+          htmlT2 += `<span class="${styleClass}">${score2}</span>`;
+        }
+
+        t1SetContainer.innerHTML = htmlT1;
+        t2SetContainer.innerHTML = htmlT2;
+      }
+    }
+
+    window.onload = function() {
+      updateClock();
+      setInterval(updateClock, 10000);
+
+      matchState.team1.players[0] = (localStorage.getItem('padel_t1_p1') || 'BEN').toUpperCase();
+      matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'REBECCA').toUpperCase();
+      matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'IAN').toUpperCase();
+      matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SARAH').toUpperCase();
+      matchState.rule = localStorage.getItem('padel_rule') || 'SILVER POINT';
+      
+      renderUI();
+      toggleMenu(true);
+    };
+  </script>
+</body>
+</html>
