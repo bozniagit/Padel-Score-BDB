@@ -360,6 +360,9 @@
     let selectedMatchIdToDelete = null;
     let matchLoggedForCurrentConclusion = false;
     let matchAlreadyLogged = false;
+    
+    // Wake Lock API reference
+    let wakeLock = null;
 
     let matchState = {
       rule: 'SILVER POINT',
@@ -374,6 +377,41 @@
 
     const pointTerms = ['0', '15', '30', '40', 'AD'];
 
+    // Request screen wake lock to keep watch display on during active match play
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          if (!wakeLock) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+              wakeLock = null;
+            });
+          }
+        } catch (err) {
+          console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+        }
+      }
+    }
+
+    // Release screen wake lock when match is paused, ended, or menu is opened
+    async function releaseWakeLock() {
+      if (wakeLock !== null) {
+        try {
+          await wakeLock.release();
+          wakeLock = null;
+        } catch (err) {
+          console.error(`Wake Lock release error: ${err.name}, ${err.message}`);
+        }
+      }
+    }
+
+    // Re-acquire wake lock if visibility changes back to active during match play
+    document.addEventListener('visibilitychange', async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible') {
+        await requestWakeLock();
+      }
+    });
+
     function toggleMenu(show) {
       const modal = document.getElementById('menu-modal');
       if (!modal) return;
@@ -381,6 +419,9 @@
         modal.classList.remove('hidden');
         showHistoryView(false);
         
+        // Release wake lock while user is in menus/settings
+        releaseWakeLock();
+
         const banner = document.getElementById('save-confirm-banner');
         if (banner) banner.classList.add('hidden');
 
@@ -399,6 +440,8 @@
         updateFinishEarlyButtonUI();
       } else {
         modal.classList.add('hidden');
+        // Re-acquire wake lock when returning to match play
+        requestWakeLock();
       }
     }
 
@@ -624,6 +667,9 @@
         updateFinishEarlyButtonUI();
       }
       
+      // Release wake lock when set is won and play pauses
+      releaseWakeLock();
+      
       const winnerName = winningTeamNumber === 1 
         ? `${matchState.team1.players.join(' & ')}` 
         : `${matchState.team2.players.join(' & ')}`;
@@ -657,6 +703,9 @@
       matchAlreadyLogged = false;
       updateFinishEarlyButtonUI();
 
+      // Re-acquire wake lock for the next set
+      requestWakeLock();
+
       const endSetModal = document.getElementById('end-set-modal');
       if (endSetModal) endSetModal.classList.add('hidden');
       renderUI();
@@ -665,6 +714,7 @@
     function finishAndLogMatch() {
       const endSetModal = document.getElementById('end-set-modal');
       if (endSetModal) endSetModal.classList.add('hidden');
+      releaseWakeLock();
       resetMatchStateOnly();
       toggleMenu(true);
     }
@@ -853,11 +903,11 @@
       matchState.serverIndex = index;
       const serverModal = document.getElementById('server-select-modal');
       if (serverModal) serverModal.classList.add('hidden');
+      
+      // Activate wake lock as the match officially starts/resumes
+      requestWakeLock();
+      
       renderUI();
-    }
-
-    function pauseUpdatesForKeyboard(isFocused) {
-      isEditingPlayers = isFocused;
     }
 
     function updateClock() {
