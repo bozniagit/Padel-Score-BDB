@@ -73,18 +73,18 @@
 
   <div class="watch-container flex flex-col justify-between relative bg-black border-4 border-gray-900">
     
-    <!-- TOP HALF: TEAM 1 ZONE (Blue) - px-20 padding with py-4 to nudge content closer to the center ribbon -->
-    <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-end pb-4 pt-6 px-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
+    <!-- TOP HALF: TEAM 1 ZONE (Blue) -->
+    <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-end pb-4 pt-4 px-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
       
-      <!-- Live Clock Top Center -->
-      <div class="absolute top-2 left-0 right-0 text-center pointer-events-none">
-        <span id="top-clock" class="text-xs font-black text-white tracking-widest drop-shadow">12:00</span>
+      <!-- Live Clock Top Center with Teko Font Matching Player Names -->
+      <div class="absolute top-1 left-0 right-0 text-center pointer-events-none">
+        <span id="top-clock" class="font-teko text-[2rem] italic font-bold tracking-widest text-white/90 drop-shadow">12:00</span>
       </div>
 
       <!-- Top Content Row: Player Names & Set Scores (Left) and Game Score (Right) -->
       <div class="flex items-center justify-between w-full">
         
-        <!-- Left Column: Player Names & Set Scores (tighter spacing with 15% bigger font: text-[1.7rem]) -->
+        <!-- Left Column: Player Names & Set Scores -->
         <div class="flex flex-col text-left flex-1 min-w-0 pr-4">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-2 leading-none whitespace-nowrap overflow-visible">
@@ -97,13 +97,13 @@
             <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
 
-          <!-- Team 1 Sets Overview Breakdown (15% bigger font: text-lg) -->
+          <!-- Team 1 Sets Overview Breakdown -->
           <div id="t1-set-container" class="flex items-center gap-1.5 text-lg font-black mt-1 overflow-x-auto no-scrollbar">
             <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
-        <!-- Right Column: Massive Slanted Game Score Number (Unchanged original size & placement) -->
+        <!-- Right Column: Massive Slanted Game Score Number -->
         <div class="flex items-center justify-end shrink-0 pl-2">
           <span id="t1-score" class="font-teko text-7xl sm:text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
         </div>
@@ -136,13 +136,18 @@
       </button>
     </div>
 
-    <!-- BOTTOM HALF: TEAM 2 ZONE (Red) - px-20 padding with pt-4 to nudge content closer to the center ribbon -->
+    <!-- BOTTOM HALF: TEAM 2 ZONE (Red) -->
     <div id="team2-zone" onclick="scorePoint(2)" class="h-1/2 w-full flex flex-col justify-start pt-4 pb-6 px-20 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-rose-800 via-rose-950 to-slate-950 cursor-pointer relative btn-tap-effect border-t border-gray-800/60">
       
+      <!-- Live Heart Rate Bottom Center with Teko Font Mirroring Top Clock -->
+      <div class="absolute bottom-1 left-0 right-0 text-center pointer-events-none">
+        <span id="bottom-hr" class="font-teko text-[2rem] italic font-bold tracking-widest text-rose-200/90 drop-shadow">❤️ 138</span>
+      </div>
+
       <!-- Bottom Content Row: Player Names & Set Scores (Left) and Game Score (Right) -->
       <div class="flex items-center justify-between w-full">
         
-        <!-- Left Column: Player Names & Set Scores (tighter spacing with 15% bigger font: text-[1.7rem]) -->
+        <!-- Left Column: Player Names & Set Scores -->
         <div class="flex flex-col text-left flex-1 min-w-0 pr-4">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-2 leading-none whitespace-nowrap overflow-visible">
@@ -155,50 +160,50 @@
             <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
 
-          <!-- Team 2 Sets Overview Breakdown (15% bigger font: text-lg) -->
+          <!-- Team 2 Sets Overview Breakdown -->
           <div id="t2-set-container" class="flex items-center gap-1.5 text-lg font-black mt-1 overflow-x-auto no-scrollbar">
             <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
-        <!-- Right Column: Massive Slanted Game Score Number (Unchanged original size & placement) -->
+        <!-- Right Column: Massive Slanted Game Score Number -->
         <div class="flex items-center justify-end shrink-0 pl-2">
           <span id="t2-score" class="font-teko text-7xl sm:text-8xl italic font-bold leading-none text-rose-200 tracking-tighter">0</span>
         </div>
       </div>
 
     </div>
-  </div>
 
-  <div id="server-select-modal" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden p-1.5">
-    
-    <!-- Top Row Quadrants (Team 1 Players: Top-Left & Top-Right) -->
-    <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pt-1.5">
-      <!-- Top-Left Quadrant (Team 1 Player 1) -->
-      <button onclick="setInitialServer(0)" id="srv-btn-0" class="bg-gradient-to-br from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-[8rem] rounded-tr-2xl rounded-br-lg rounded-bl-2xl p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
-        <span id="srv-lbl-0" class="truncate w-full text-center px-1">BEN</span>
-      </button>
-      <!-- Top-Right Quadrant (Team 1 Player 2) -->
-      <button onclick="setInitialServer(2)" id="srv-btn-2" class="bg-gradient-to-bl from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-2xl rounded-tr-[8rem] rounded-br-2xl rounded-bl-lg p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
-        <span id="srv-lbl-2" class="truncate w-full text-center px-1">REBECCA</span>
-      </button>
-    </div>
+    <div id="server-select-modal" class="hidden absolute inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden p-1.5">
+      
+      <!-- Top Row Quadrants (Team 1 Players: Top-Left & Top-Right) -->
+      <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pt-1.5">
+        <!-- Top-Left Quadrant (Team 1 Player 1) -->
+        <button onclick="setInitialServer(0)" id="srv-btn-0" class="bg-gradient-to-br from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-[8rem] rounded-tr-2xl rounded-br-lg rounded-bl-2xl p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+          <span id="srv-lbl-0" class="truncate w-full text-center px-1">BEN</span>
+        </button>
+        <!-- Top-Right Quadrant (Team 1 Player 2) -->
+        <button onclick="setInitialServer(2)" id="srv-btn-2" class="bg-gradient-to-bl from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-2xl rounded-tr-[8rem] rounded-br-2xl rounded-bl-lg p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+          <span id="srv-lbl-2" class="truncate w-full text-center px-1">REBECCA</span>
+        </button>
+      </div>
 
-    <!-- Center Horizontal Question Band -->
-    <div class="z-20 w-full h-[44px] bg-black/95 backdrop-blur-md border-y border-yellow-500/50 py-1 px-4 flex flex-col items-center justify-center shadow-2xl relative shrink-0">
-      <h3 class="text-[10px] sm:text-xs font-black text-yellow-400 tracking-wider uppercase text-center glow-text">WHO IS SERVING FIRST?</h3>
-    </div>
+      <!-- Center Horizontal Question Band -->
+      <div class="z-20 w-full h-[44px] bg-black/95 backdrop-blur-md border-y border-yellow-500/50 py-1 px-4 flex flex-col items-center justify-center shadow-2xl relative shrink-0">
+        <h3 class="text-[10px] sm:text-xs font-black text-yellow-400 tracking-wider uppercase text-center glow-text">WHO IS SERVING FIRST?</h3>
+      </div>
 
-    <!-- Bottom Row Quadrants (Team 2 Players: Bottom-Left & Bottom-Right) -->
-    <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pb-1.5">
-      <!-- Bottom-Left Quadrant (Team 2 Player 1) -->
-      <button onclick="setInitialServer(1)" id="srv-btn-1" class="bg-gradient-to-tr from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-2xl rounded-tr-lg rounded-br-2xl rounded-bl-[8rem] p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
-        <span id="srv-lbl-1" class="truncate w-full text-center px-1">IAN</span>
-      </button>
-      <!-- Bottom-Right Quadrant (Team 2 Player 2) -->
-      <button onclick="setInitialServer(3)" id="srv-btn-3" class="bg-gradient-to-tl from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-lg rounded-tr-2xl rounded-br-[8rem] rounded-bl-2xl p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
-        <span id="srv-lbl-3" class="truncate w-full text-center px-1">SARAH</span>
-      </button>
+      <!-- Bottom Row Quadrants (Team 2 Players: Bottom-Left & Bottom-Right) -->
+      <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pb-1.5">
+        <!-- Bottom-Left Quadrant (Team 2 Player 1) -->
+        <button onclick="setInitialServer(1)" id="srv-btn-1" class="bg-gradient-to-tr from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-2xl rounded-tr-lg rounded-br-2xl rounded-bl-[8rem] p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+          <span id="srv-lbl-1" class="truncate w-full text-center px-1">IAN</span>
+        </button>
+        <!-- Bottom-Right Quadrant (Team 2 Player 2) -->
+        <button onclick="setInitialServer(3)" id="srv-btn-3" class="bg-gradient-to-tl from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-lg rounded-tr-2xl rounded-br-[8rem] rounded-bl-2xl p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+          <span id="srv-lbl-3" class="truncate w-full text-center px-1">SARAH</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -286,7 +291,7 @@
           </button>
         </div>
 
-        <!-- Close Menu Button (Go to live scoring) -->
+        <!-- Close Menu Button -->
         <button onclick="toggleMenu(false)" class="w-full bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black py-2 rounded-xl border border-yellow-300 uppercase tracking-wide">
           ✕ Close Settings
         </button>
@@ -863,6 +868,14 @@
       const clockEl = document.getElementById('top-clock');
       if (clockEl) clockEl.innerText = `${hours}:${minutes}`;
 
+      // Simulate realistic active Padel heart rate fluctuations (130-155 bpm)
+      const hrEl = document.getElementById('bottom-hr');
+      if (hrEl) {
+        const baseHr = 135;
+        const jitter = Math.floor(Math.sin(Date.now() / 5000) * 8) + Math.floor(Math.random() * 3);
+        hrEl.innerText = `❤️ ${baseHr + jitter}`;
+      }
+
       if (matchState.startTime) {
         const elapsedSec = Math.floor((Date.now() - matchState.startTime) / 1000);
         const mins = Math.floor(elapsedSec / 60);
@@ -1033,7 +1046,6 @@
       matchState.rule = localStorage.getItem('padel_rule') || 'SILVER POINT';
       
       renderUI();
-      // Start on menu screen on initial load
       toggleMenu(true);
     };
   </script>
