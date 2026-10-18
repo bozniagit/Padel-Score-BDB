@@ -23,26 +23,29 @@
     --neon-yellow: #ccff00;
   }
 
-  body {
+  html, body {
     font-family: 'Inter', sans-serif;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
-    overscroll-behavior: none;
-    overflow: hidden;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+    overflow: hidden !important;
     position: fixed;
     width: 100vw;
     height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
   }
 
   .font-teko {
     font-family: 'Teko', sans-serif;
   }
 
-  /* Deep inward padding for round watch screen safe zones */
+  /* Safe inner boundaries for circular smartwatch viewports */
   .circular-safe-inset {
-    padding-left: 20%;
-    padding-right: 20%;
+    padding-left: 18%;
+    padding-right: 18%;
   }
 
   .watch-container {
@@ -55,7 +58,7 @@
     overflow: hidden;
     box-shadow: 0 0 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5);
     position: relative;
-    touch-action: none;
+    touch-action: none !important;
   }
 
   .glow-text {
@@ -66,47 +69,55 @@
     transform: scale(0.96);
     filter: brightness(1.2);
   }
+
+  /* Custom scrollbar styling for watch sub-menus */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+  }
   </style>
 </head>
-<body class="bg-black text-white flex items-center justify-center min-h-screen m-0 p-0 overflow-hidden">
+<body class="bg-black text-white flex items-center justify-center min-h-screen m-0 p-0 overflow-hidden select-none">
 
+  <!-- MAIN WATCH CONTAINER -->
   <div class="watch-container flex flex-col justify-between relative bg-black border-4 border-gray-900">
     
     <!-- TOP HALF: TEAM 1 ZONE (Blue) -->
     <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-between pt-6 pb-2 circular-safe-inset bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
       
       <!-- Live Clock Top Center -->
-      <div class="absolute top-1.5 left-0 right-0 text-center">
-        <span id="top-clock" class="text-lg font-black text-white tracking-widest drop-shadow">12:08</span>
+      <div class="absolute top-1.5 left-0 right-0 text-center pointer-events-none">
+        <span id="top-clock" class="text-lg font-black text-white tracking-widest drop-shadow">12:00</span>
       </div>
 
       <!-- Top Content Row: Player Names (Left) and Game Score (Right) -->
       <div class="flex items-center justify-between w-full my-auto">
         
-        <!-- Left Column: Names TOP, Set scores BOTTOM -->
+        <!-- Left Column: Player Names & Set Scores -->
         <div class="flex flex-col text-left max-w-[55%]">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t1-p1" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">BEN</span>
+            <span id="t1-p1" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">BEN</span>
             <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t1-p2" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase truncate leading-none">REBECCA</span>
+            <span id="t1-p2" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">REBECCA</span>
             <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
           </div>
 
-          <!-- Team 1 Sets Overview Breakdown (Bigger numbers) -->
-          <div class="flex items-center gap-3 text-2xl sm:text-3xl font-black mt-1">
-            <span id="t1-set1" class="text-gray-300">6</span>
-            <span id="t1-set2" class="text-slate-400">3</span>
-            <span id="t1-set3" class="text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text">4</span>
+          <!-- Team 1 Sets Overview Breakdown -->
+          <div id="t1-set-container" class="flex items-center gap-2 text-xl sm:text-2xl font-black mt-1 overflow-x-auto no-scrollbar">
+            <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
         <!-- Right Column: Massive Slanted Game Score Number -->
         <div class="flex items-center justify-end">
-          <span id="t1-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">40</span>
+          <span id="t1-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
         </div>
       </div>
 
@@ -124,10 +135,10 @@
       <!-- Center Status & Active Scoring Rule Badge -->
       <div class="flex flex-col items-center justify-center leading-none px-1">
         <span id="active-rule-badge" class="bg-yellow-400/20 text-[var(--neon-yellow)] text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-wider border border-yellow-400/40 uppercase mb-0.5">
-          GOLDEN POINT
+          SILVER POINT
         </span>
         <div id="match-status-text" class="text-[9px] font-black text-yellow-400 tracking-wide uppercase">
-          <span id="match-timer" class="font-mono text-gray-300">⏱ 1:10</span> <span id="context-status" class="text-[var(--neon-yellow)]">BREAK POINT</span>
+          <span id="match-timer" class="font-mono text-gray-300">⏱ 0:00</span> <span id="context-status" class="text-[var(--neon-yellow)]">SET 1</span>
         </div>
       </div>
 
@@ -138,36 +149,34 @@
       </button>
     </div>
 
-    <!-- BOTTOM HALF: TEAM 2 ZONE (Red/Purple) -->
+    <!-- BOTTOM HALF: TEAM 2 ZONE (Red) -->
     <div id="team2-zone" onclick="scorePoint(2)" class="h-1/2 w-full flex flex-col justify-between pt-2 pb-6 circular-safe-inset bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-rose-800 via-rose-950 to-slate-950 cursor-pointer relative btn-tap-effect border-t border-gray-800/60">
       
-      <!-- Bottom Content Row: Player Names (Left) and Game Score (Right) -->
+      <!-- Bottom Content Row: Player Names & Game Score -->
       <div class="flex items-center justify-between w-full my-auto">
         
-        <!-- Left Column: Names TOP, Set scores BOTTOM (matching Blue zone layout) -->
+        <!-- Left Column: Player Names & Set Scores -->
         <div class="flex flex-col text-left max-w-[55%]">
           <!-- Player 1 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t2-p1" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">IAN</span>
+            <span id="t2-p1" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">IAN</span>
             <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">L</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
           <div class="flex items-center gap-1.5">
-            <span id="t2-p2" class="text-xl sm:text-2xl font-black tracking-tight text-rose-200 uppercase truncate leading-none">SARAH</span>
+            <span id="t2-p2" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">SARAH</span>
             <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">R</span>
           </div>
 
           <!-- Team 2 Sets Overview Breakdown -->
-          <div class="flex items-center gap-3 text-2xl sm:text-3xl font-black mt-1">
-            <span id="t2-set1" class="text-slate-400">4</span>
-            <span id="t2-set2" class="text-gray-300">6</span>
-            <span id="t2-set3" class="text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text">3</span>
+          <div id="t2-set-container" class="flex items-center gap-2 text-xl sm:text-2xl font-black mt-1 overflow-x-auto no-scrollbar">
+            <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
         <!-- Right Column: Massive Slanted Game Score Number -->
         <div class="flex items-center justify-end">
-          <span id="t2-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">AD</span>
+          <span id="t2-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
         </div>
       </div>
 
@@ -175,40 +184,125 @@
 
   </div>
 
-  <div id="menu-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-    <div class="w-full max-w-xs space-y-4 my-auto py-6">
-      <h2 class="text-lg font-black text-yellow-400 tracking-wider">MATCH SETTINGS</h2>
-      
-      <!-- Scoring Rule Selector -->
-      <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-left">
-        <label class="text-xs text-gray-400 font-semibold block mb-1.5">SCORING RULE</label>
-        <select id="rule-selector" onchange="updateScoringRule(this.value)" class="w-full bg-gray-800 text-white text-xs font-bold p-2.5 rounded-lg border border-gray-700 outline-none">
-          <option value="GOLDEN POINT">Golden Point (No Advantage)</option>
-          <option value="SILVER POINT">Silver Point (1 Advantage, then Deciding)</option>
-          <option value="STAR POINT">Star Point (Tie-break Rule)</option>
-          <option value="ADVANTAGE">Standard Advantage (Deuce / Ad)</option>
-        </select>
-      </div>
+  <!-- END OF SET PROMPT MODAL -->
+  <div id="end-set-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
+    <div class="w-full max-w-xs space-y-3 my-auto py-4">
+      <div class="text-[var(--neon-yellow)] text-2xl font-black tracking-wider uppercase" id="set-winner-title">SET WON!</div>
+      <p id="set-winner-subtitle" class="text-xs text-gray-300 font-semibold">Team 1 wins Set 1</p>
 
-      <!-- Player Names Config -->
-      <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-left space-y-2">
-        <label class="text-xs text-gray-400 font-semibold block">EDIT PLAYERS</label>
-        <div class="grid grid-cols-2 gap-2">
-          <input id="input-t1p1" type="text" placeholder="P1 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t1p2" type="text" placeholder="P2 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t2p1" type="text" placeholder="P3 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
-          <input id="input-t2p2" type="text" placeholder="P4 Name" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" class="bg-gray-800 text-xs p-2 rounded text-white border border-gray-700 uppercase">
+      <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 text-xs text-gray-300 space-y-1">
+        <div class="flex justify-between font-bold text-white">
+          <span>MATCH TIME:</span>
+          <span id="prompt-match-time" class="text-yellow-400 font-mono">18m</span>
         </div>
-        <button onclick="savePlayerNames()" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-bold py-2 rounded text-white">Save Player Names</button>
+        <div class="flex justify-between font-bold text-white">
+          <span>EST. CALORIES:</span>
+          <span id="prompt-calories" class="text-yellow-400 font-mono">145 kcal</span>
+        </div>
       </div>
 
-      <!-- Match Control Buttons -->
-      <div class="flex gap-2">
-        <button onclick="resetMatch()" class="w-1/2 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl border border-red-500">
-          Reset Match
+      <div class="space-y-2 pt-1">
+        <button onclick="continueNextSet()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-xl border border-blue-400 flex items-center justify-center gap-2">
+          <span>▶</span>
+          <span>Play Next Set</span>
         </button>
-        <button onclick="toggleMenu(false)" class="w-1/2 bg-yellow-400 text-black text-xs font-bold py-2.5 rounded-xl">
-          Back to Match
+        <button onclick="finishAndLogMatch()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl border border-emerald-400 flex items-center justify-center gap-2">
+          <span>🏁</span>
+          <span>Finish & Save Match</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU MODAL OVERLAY -->
+  <div id="menu-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 text-center overflow-y-auto">
+    <div class="w-full max-w-xs my-auto space-y-3 py-2">
+      
+      <!-- SETTINGS VIEW -->
+      <div id="menu-settings-view" class="space-y-3">
+        <h2 class="text-sm font-black text-yellow-400 tracking-wider uppercase">MATCH SETTINGS</h2>
+
+        <!-- Rule Selector -->
+        <div class="text-left space-y-1">
+          <label class="text-[10px] text-gray-400 font-bold uppercase block">Scoring Rule</label>
+          <select id="rule-selector" onchange="updateScoringRule(this.value)" class="w-full bg-gray-900 text-white text-xs font-bold p-2 rounded-xl border border-gray-800 outline-none">
+            <option value="SILVER POINT">Silver Point (1 Advantage Max)</option>
+            <option value="GOLDEN POINT">Golden Point (No Advantage)</option>
+            <option value="STANDARD DEUCE">Standard Advantage</option>
+          </select>
+        </div>
+
+        <!-- Edit Players -->
+        <div class="text-left space-y-1.5">
+          <label class="text-[10px] text-gray-400 font-bold uppercase block">Edit Players</label>
+          <div class="grid grid-cols-2 gap-1.5">
+            <input id="input-t1p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P1" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+            <input id="input-t1p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P2" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+            <input id="input-t2p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P1" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+            <input id="input-t2p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P2" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+          </div>
+          <button onclick="savePlayerNames()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-1.5 rounded-xl border border-blue-400">
+            Save Names
+          </button>
+        </div>
+
+        <!-- Stop & Log Match Early Button -->
+        <button onclick="promptStopMatchEarly()" class="w-full bg-emerald-900/50 hover:bg-emerald-900/80 text-emerald-300 text-xs font-bold py-2 rounded-xl border border-emerald-700/60 flex items-center justify-center gap-2">
+          <span>🏁</span>
+          <span>Finish & Log Match Now</span>
+        </button>
+
+        <!-- Match History Button -->
+        <button onclick="showHistoryView(true)" class="w-full bg-gray-800 hover:bg-gray-700 text-yellow-400 text-xs font-bold py-2 rounded-xl border border-gray-700 flex items-center justify-center gap-2">
+          <span>📜</span>
+          <span>Match History</span>
+        </button>
+
+        <!-- Reset Match Button -->
+        <button onclick="resetMatch()" class="w-full bg-rose-900/40 hover:bg-rose-900/70 text-rose-300 text-xs font-bold py-2 rounded-xl border border-rose-800/60">
+          Reset Current Match
+        </button>
+
+        <!-- Close Menu Button -->
+        <button onclick="toggleMenu(false)" class="w-full bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-xl border border-gray-700">
+          Close Settings
+        </button>
+      </div>
+
+      <!-- HISTORY VIEW CONTAINER -->
+      <div id="menu-history-view" class="hidden space-y-3">
+        <h2 class="text-sm font-black text-yellow-400 tracking-wider uppercase">MATCH HISTORY</h2>
+        <div id="history-list" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+          <!-- Dynamically populated history cards -->
+        </div>
+        <p class="text-[9px] text-gray-500 italic text-center">Long-press any match to delete it</p>
+        
+        <!-- Clear All History Button -->
+        <button onclick="promptClearAllHistory()" class="w-full bg-rose-900/40 hover:bg-rose-900/70 text-rose-300 text-xs font-bold py-1.5 rounded-xl border border-rose-800/60">
+          Clear All History
+        </button>
+
+        <button onclick="showHistoryView(false)" class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded-xl border border-gray-700">
+          Back to Settings
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Match Actions / Delete Confirmation Modal -->
+  <div id="match-action-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4 text-center">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 w-full max-w-xs space-y-3 shadow-2xl">
+      <h3 id="action-modal-title" class="text-sm font-black text-white uppercase">MATCH ACTIONS</h3>
+      <p id="action-modal-desc" class="text-xs text-gray-400">What would you like to do with this match entry?</p>
+
+      <div class="space-y-2 pt-1">
+        <button id="action-modal-confirm-btn" onclick="confirmDeleteSelectedMatch()" class="w-full bg-red-600 hover:bg-red-500 text-white text-xs font-bold py-2.5 rounded-xl border border-red-500 flex items-center justify-center gap-2">
+          <span>🗑</span>
+          <span id="action-modal-confirm-text">Delete This Match</span>
+        </button>
+        <button onclick="closeMatchActionModal()" class="w-full bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-xl border border-gray-700">
+          Cancel
         </button>
       </div>
     </div>
@@ -216,9 +310,12 @@
 
 <script>
   let isEditingPlayers = false;
+  let matchTimerInterval = null;
+  let historyPressTimer = null;
+  let selectedMatchIdToDelete = null;
 
   let matchState = {
-    rule: 'GOLDEN POINT',
+    rule: 'SILVER POINT',
     team1: { name: 'Team 1', players: ['BEN', 'REBECCA'], gameScore: 3, setScores: [0, 0, 0] },
     team2: { name: 'Team 2', players: ['IAN', 'SARAH'], gameScore: 3, setScores: [0, 0, 0] },
     currentSet: 0,
@@ -234,17 +331,26 @@
   }
 
   function updateClock() {
-    if (isEditingPlayers) return; // Prevent clock updates from closing watch keyboard
+    if (isEditingPlayers) return;
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const clockEl = document.getElementById('top-clock');
     if (clockEl) clockEl.innerText = `${hours}:${minutes}`;
+
+    // Update match duration timer
+    if (matchState.startTime) {
+      const elapsedSec = Math.floor((Date.now() - matchState.startTime) / 1000);
+      const mins = Math.floor(elapsedSec / 60);
+      const timerEl = document.getElementById('match-timer');
+      if (timerEl) timerEl.innerText = `⏱ ${mins}m`;
+    }
   }
 
   function updateScoringRule(newRule) {
     matchState.rule = newRule;
-    document.getElementById('active-rule-badge').innerText = newRule;
+    const badge = document.getElementById('active-rule-badge');
+    if (badge) badge.innerText = newRule;
     localStorage.setItem('padel_rule', newRule);
   }
 
@@ -269,11 +375,12 @@
   function resetMatch() {
     saveStateForUndo();
     matchState.team1.gameScore = 0;
-    matchState.team1.setScores = [0, 0, 0];
+    matchState.team1.setScores = [0];
     matchState.team2.gameScore = 0;
-    matchState.team2.setScores = [0, 0, 0];
+    matchState.team2.setScores = [0];
     matchState.currentSet = 0;
     matchState.silverAdPlayed = false;
+    matchState.startTime = Date.now();
     renderUI();
     toggleMenu(false);
   }
@@ -291,13 +398,13 @@
       winGame(teamNumber);
       return;
     } else if (scoringTeam.gameScore === 3 && opponentTeam.gameScore === 3) {
-      // 40-40 (Deuce)
+      // 40-40 Deuce handling
       if (matchState.rule === 'GOLDEN POINT') {
         winGame(teamNumber);
         return;
       } else if (matchState.rule === 'SILVER POINT') {
         if (matchState.silverAdPlayed) {
-          // Advantage was already used this game; this is the Deciding Point
+          // Advantage point was already played; this is the Deciding Point
           winGame(teamNumber);
           return;
         } else {
@@ -305,19 +412,15 @@
           matchState.silverAdPlayed = true;
         }
       } else {
-        // Standard Advantage or Star Point
+        // Standard Advantage
         scoringTeam.gameScore = 4; // AD
       }
     } else if (scoringTeam.gameScore === 4) {
-      // Team with AD scored again -> Win game
       winGame(teamNumber);
       return;
     } else if (opponentTeam.gameScore === 4) {
-      // Opponent had AD and scoring team won the point
       if (matchState.rule === 'SILVER POINT') {
-        // Returned to Deuce after Advantage -> Silver Point is active for next point
-        opponentTeam.gameScore = 3;
-        // matchState.silverAdPlayed remains true!
+        opponentTeam.gameScore = 3; // Reverts to 40-40, silver point active
       } else {
         opponentTeam.gameScore = 3; // Standard Deuce
       }
@@ -328,33 +431,254 @@
 
   function winGame(teamNumber) {
     let winningTeam = teamNumber === 1 ? matchState.team1 : matchState.team2;
-    winningTeam.setScores[matchState.currentSet]++;
+    let losingTeam = teamNumber === 1 ? matchState.team2 : matchState.team1;
+    
+    const currSetIdx = matchState.currentSet;
+    winningTeam.setScores[currSetIdx] = (winningTeam.setScores[currSetIdx] || 0) + 1;
+    
     matchState.team1.gameScore = 0;
     matchState.team2.gameScore = 0;
-    matchState.silverAdPlayed = false; // Reset for next game
-    
-    if (winningTeam.setScores[matchState.currentSet] >= 6) {
-      if (matchState.currentSet < 2) matchState.currentSet++;
+    matchState.silverAdPlayed = false;
+
+    const winGames = winningTeam.setScores[currSetIdx];
+    const loseGames = losingTeam.setScores[currSetIdx] || 0;
+
+    // Check if set is completed (e.g. 6-4, 6-3, 7-5)
+    if (winGames >= 6 && (winGames - loseGames >= 2)) {
+      promptEndSet(teamNumber);
+      return;
     }
 
     renderUI();
   }
 
+  function promptEndSet(winningTeamNum) {
+    const currSetIdx = matchState.currentSet;
+    const winTeamName = winningTeamNum === 1 ? "Team 1" : "Team 2";
+    const scoreText = `${matchState.team1.setScores[currSetIdx]} - ${matchState.team2.setScores[currSetIdx]}`;
+    
+    const elapsedMins = Math.max(1, Math.floor((Date.now() - matchState.startTime) / 60000));
+    const estCalories = Math.round(elapsedMins * 8.5); // ~8.5 kcal/min padel estimate
+
+    document.getElementById('set-winner-title').innerText = `${winTeamName} WINS SET ${currSetIdx + 1}!`;
+    document.getElementById('set-winner-subtitle').innerText = `Final Set Score: ${scoreText}`;
+    document.getElementById('prompt-match-time').innerText = `${elapsedMins} mins`;
+    document.getElementById('prompt-calories').innerText = `${estCalories} kcal`;
+
+    document.getElementById('end-set-modal').classList.remove('hidden');
+  }
+
+  function continueNextSet() {
+    document.getElementById('end-set-modal').classList.add('hidden');
+    matchState.currentSet++;
+    matchState.team1.setScores.push(0);
+    matchState.team2.setScores.push(0);
+    renderUI();
+  }
+
+  function finishAndLogMatch() {
+    document.getElementById('end-set-modal').classList.add('hidden');
+    logMatchHistory();
+    resetMatch();
+  }
+
+  function logMatchHistory() {
+    const elapsedMins = Math.max(1, Math.floor((Date.now() - matchState.startTime) / 60000));
+    const estCalories = Math.round(elapsedMins * 8.5);
+    
+    const setSummaries = [];
+    for (let i = 0; i <= matchState.currentSet; i++) {
+      setSummaries.push(`${matchState.team1.setScores[i] || 0}-${matchState.team2.setScores[i] || 0}`);
+    }
+
+    // Determine winning team based on set wins
+    let t1SetsWon = 0;
+    let t2SetsWon = 0;
+    for (let i = 0; i <= matchState.currentSet; i++) {
+      const s1 = matchState.team1.setScores[i] || 0;
+      const s2 = matchState.team2.setScores[i] || 0;
+      if (s1 > s2) t1SetsWon++;
+      else if (s2 > s1) t2SetsWon++;
+    }
+    const winningTeam = t1SetsWon >= t2SetsWon ? matchState.team1.players.join(' & ') : matchState.team2.players.join(' & ');
+
+    const logEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      team1Name: matchState.team1.players.join(' & '),
+      team2Name: matchState.team2.players.join(' & '),
+      sets: setSummaries.join(', '),
+      duration: `${elapsedMins}m`,
+      calories: `${estCalories}`,
+      winner: winningTeam
+    };
+
+    let existingLogs = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+    existingLogs.unshift(logEntry);
+    if (existingLogs.length > 20) existingLogs.pop(); // keep last 20 matches
+
+    localStorage.setItem('padel_match_history', JSON.stringify(existingLogs));
+  }
+
+  function showHistoryView(show) {
+    const settingsView = document.getElementById('menu-settings-view');
+    const historyView = document.getElementById('menu-history-view');
+    if (settingsView) settingsView.classList.toggle('hidden', show);
+    if (historyView) historyView.classList.toggle('hidden', !show);
+    if (show) renderHistoryList();
+  }
+
+  function renderHistoryList() {
+    const historyContainer = document.getElementById('history-list');
+    if (!historyContainer) return;
+
+    const savedHistory = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+    
+    if (savedHistory.length === 0) {
+      historyContainer.innerHTML = `<div class="text-xs text-gray-500 py-4">No completed matches saved yet.</div>`;
+      return;
+    }
+
+    historyContainer.innerHTML = savedHistory.map(match => `
+      <div 
+        onmousedown="startHistoryLongPress('${match.id}')" 
+        onmouseup="cancelHistoryLongPress()" 
+        onmouseleave="cancelHistoryLongPress()"
+        ontouchstart="startHistoryLongPress('${match.id}')" 
+        ontouchend="cancelHistoryLongPress()"
+        ontouchcancel="cancelHistoryLongPress()"
+        class="bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-left active:scale-95 transition-transform cursor-pointer select-none relative overflow-hidden"
+      >
+        <div class="flex items-center justify-between text-[10px] text-gray-400 border-b border-gray-800/80 pb-1 mb-1.5">
+          <span>${match.date || ''} ${match.time ? '• ' + match.time : ''}</span>
+          <span class="text-yellow-400 font-mono">⏱ ${match.duration || '0m'}</span>
+        </div>
+        <div class="flex items-center justify-between text-xs font-bold mb-1">
+          <span class="text-blue-400 truncate max-w-[65%]">${match.team1Name || 'Team 1'}</span>
+        </div>
+        <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+          <span class="text-rose-400 truncate max-w-[65%]">${match.team2Name || 'Team 2'}</span>
+          <span class="text-white font-mono">${match.sets || ''}</span>
+        </div>
+        <div class="flex items-center justify-between text-[9px] text-gray-400 pt-1 border-t border-gray-800/50">
+          <span>🔥 ~${match.calories || 0} kcal</span>
+          <span class="text-yellow-400 font-bold uppercase">${match.winner || 'MATCH'}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function startHistoryLongPress(matchId) {
+    cancelHistoryLongPress();
+    historyPressTimer = setTimeout(() => {
+      openMatchActionModal(matchId);
+    }, 600); // 600ms long press threshold
+  }
+
+  function cancelHistoryLongPress() {
+    if (historyPressTimer) {
+      clearTimeout(historyPressTimer);
+      historyPressTimer = null;
+    }
+  }
+
+  function openMatchActionModal(matchId) {
+    selectedMatchIdToDelete = matchId;
+    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
+    
+    const titleEl = document.getElementById('action-modal-title');
+    const descEl = document.getElementById('action-modal-desc');
+    const btnTextEl = document.getElementById('action-modal-confirm-text');
+    const btnEl = document.getElementById('action-modal-confirm-btn');
+
+    if (titleEl) titleEl.innerText = "DELETE MATCH";
+    if (descEl) descEl.innerText = "Are you sure you want to delete this match record?";
+    if (btnTextEl) btnTextEl.innerText = "Delete This Match";
+    if (btnEl) btnEl.onclick = confirmDeleteSelectedMatch;
+
+    document.getElementById('match-action-modal').classList.remove('hidden');
+  }
+
+  function promptStopMatchEarly() {
+    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
+
+    const titleEl = document.getElementById('action-modal-title');
+    const descEl = document.getElementById('action-modal-desc');
+    const btnTextEl = document.getElementById('action-modal-confirm-text');
+    const btnEl = document.getElementById('action-modal-confirm-btn');
+
+    if (titleEl) titleEl.innerText = "FINISH MATCH EARLY";
+    if (descEl) descEl.innerText = "End current match now, save existing scores to Match History, and start a new match?";
+    if (btnTextEl) btnTextEl.innerText = "Save & Finish Match";
+    if (btnEl) btnEl.onclick = confirmStopMatchEarly;
+
+    document.getElementById('match-action-modal').classList.remove('hidden');
+  }
+
+  function confirmStopMatchEarly() {
+    closeMatchActionModal();
+    logMatchHistory();
+    resetMatch();
+  }
+
+  function promptClearAllHistory() {
+    selectedMatchIdToDelete = null;
+    if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
+
+    const titleEl = document.getElementById('action-modal-title');
+    const descEl = document.getElementById('action-modal-desc');
+    const btnTextEl = document.getElementById('action-modal-confirm-text');
+    const btnEl = document.getElementById('action-modal-confirm-btn');
+
+    if (titleEl) titleEl.innerText = "CLEAR ALL HISTORY";
+    if (descEl) descEl.innerText = "Are you sure you want to permanently delete ALL match history?";
+    if (btnTextEl) btnTextEl.innerText = "Delete All History";
+    if (btnEl) btnEl.onclick = confirmClearAllHistory;
+
+    document.getElementById('match-action-modal').classList.remove('hidden');
+  }
+
+  function confirmClearAllHistory() {
+    localStorage.removeItem('padel_match_history');
+    closeMatchActionModal();
+    renderHistoryList();
+  }
+
+  function closeMatchActionModal() {
+    selectedMatchIdToDelete = null;
+    document.getElementById('match-action-modal').classList.add('hidden');
+  }
+
+  function confirmDeleteSelectedMatch() {
+    if (!selectedMatchIdToDelete) return;
+
+    let savedHistory = JSON.parse(localStorage.getItem('padel_match_history') || '[]');
+    savedHistory = savedHistory.filter(m => String(m.id) !== String(selectedMatchIdToDelete));
+    
+    localStorage.setItem('padel_match_history', JSON.stringify(savedHistory));
+    
+    closeMatchActionModal();
+    renderHistoryList();
+  }
+
+  function clearMatchHistory() {
+    localStorage.removeItem('padel_match_history');
+    renderHistoryList();
+  }
+
   function saveStateForUndo() {
-    // Create clean lightweight snapshot without recursive history nesting
     const snapshot = {
       rule: matchState.rule,
       team1: JSON.parse(JSON.stringify(matchState.team1)),
       team2: JSON.parse(JSON.stringify(matchState.team2)),
       currentSet: matchState.currentSet,
-      serverIndex: matchState.serverIndex
+      silverAdPlayed: matchState.silverAdPlayed,
+      startTime: matchState.startTime
     };
 
     matchState.history.push(snapshot);
-    // Keep max 30 undo steps to ensure instant speed and low RAM usage
-    if (matchState.history.length > 30) {
-      matchState.history.shift();
-    }
+    if (matchState.history.length > 30) matchState.history.shift();
   }
 
   function undoLastPoint() {
@@ -370,13 +694,21 @@
   }
 
   function toggleMenu(show) {
-    document.getElementById('menu-modal').classList.toggle('hidden', !show);
+    const menuModal = document.getElementById('menu-modal');
+    if (menuModal) menuModal.classList.toggle('hidden', !show);
     if (show) {
-      document.getElementById('input-t1p1').value = matchState.team1.players[0] || '';
-      document.getElementById('input-t1p2').value = matchState.team1.players[1] || '';
-      document.getElementById('input-t2p1').value = matchState.team2.players[0] || '';
-      document.getElementById('input-t2p2').value = matchState.team2.players[1] || '';
-      document.getElementById('rule-selector').value = matchState.rule;
+      showHistoryView(false);
+      const inputT1P1 = document.getElementById('input-t1p1');
+      const inputT1P2 = document.getElementById('input-t1p2');
+      const inputT2P1 = document.getElementById('input-t2p1');
+      const inputT2P2 = document.getElementById('input-t2p2');
+      const ruleSelector = document.getElementById('rule-selector');
+
+      if (inputT1P1) inputT1P1.value = matchState.team1.players[0] || '';
+      if (inputT1P2) inputT1P2.value = matchState.team1.players[1] || '';
+      if (inputT2P1) inputT2P1.value = matchState.team2.players[0] || '';
+      if (inputT2P2) inputT2P2.value = matchState.team2.players[1] || '';
+      if (ruleSelector) ruleSelector.value = matchState.rule;
     }
   }
 
@@ -400,41 +732,37 @@
     if (t1Score) t1Score.innerText = pointTerms[matchState.team1.gameScore] || '0';
     if (t2Score) t2Score.innerText = pointTerms[matchState.team2.gameScore] || '0';
 
-    // Highlight Active Set & Render Breakdown
-    const activeSetIndex = typeof matchState.currentSet === 'number' ? matchState.currentSet : 0;
-    
-    [0, 1, 2].forEach(setIdx => {
-      const elT1 = document.getElementById(`t1-set${setIdx + 1}`);
-      const elT2 = document.getElementById(`t2-set${setIdx + 1}`);
+    // Update Context Status
+    const contextStatus = document.getElementById('context-status');
+    if (contextStatus) contextStatus.innerText = `SET ${matchState.currentSet + 1}`;
 
-      const scoreT1 = matchState.team1.setScores[setIdx] ?? 0;
-      const scoreT2 = matchState.team2.setScores[setIdx] ?? 0;
+    // Dynamic Set Containers (supports unlimited dynamic sets)
+    const t1SetContainer = document.getElementById('t1-set-container');
+    const t2SetContainer = document.getElementById('t2-set-container');
 
-      if (elT1) {
-        elT1.innerText = scoreT1;
-        if (setIdx === activeSetIndex) {
-          elT1.className = "text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text";
-        } else if (setIdx < activeSetIndex) {
-          elT1.className = "text-gray-300 text-2xl sm:text-3xl font-black";
-        } else {
-          elT1.className = "text-gray-600 text-xl sm:text-2xl font-black";
-        }
+    if (t1SetContainer && t2SetContainer) {
+      let htmlT1 = '';
+      let htmlT2 = '';
+
+      for (let i = 0; i <= matchState.currentSet; i++) {
+        const score1 = matchState.team1.setScores[i] ?? 0;
+        const score2 = matchState.team2.setScores[i] ?? 0;
+
+        const isCurrent = (i === matchState.currentSet);
+        const styleClass = isCurrent 
+          ? "text-[var(--neon-yellow)] text-2xl sm:text-3xl font-black glow-text"
+          : "text-gray-300 text-lg sm:text-xl font-black";
+
+        htmlT1 += `<span class="${styleClass}">${score1}</span>`;
+        htmlT2 += `<span class="${styleClass}">${score2}</span>`;
       }
 
-      if (elT2) {
-        elT2.innerText = scoreT2;
-        if (setIdx === activeSetIndex) {
-          elT2.className = "text-[var(--neon-yellow)] text-3xl sm:text-4xl font-black glow-text";
-        } else if (setIdx < activeSetIndex) {
-          elT2.className = "text-gray-300 text-2xl sm:text-3xl font-black";
-        } else {
-          elT2.className = "text-gray-600 text-xl sm:text-2xl font-black";
-        }
-      }
-    });
+      t1SetContainer.innerHTML = htmlT1;
+      t2SetContainer.innerHTML = htmlT2;
+    }
   }
 
-  // Prevent default watch gestures from panning/moving watch app screen
+  // Prevent Watch UI touch panning / dragging completely
   document.addEventListener('touchmove', function(e) {
     e.preventDefault();
   }, { passive: false });
@@ -447,9 +775,7 @@
     matchState.team1.players[1] = (localStorage.getItem('padel_t1_p2') || 'REBECCA').toUpperCase();
     matchState.team2.players[0] = (localStorage.getItem('padel_t2_p1') || 'IAN').toUpperCase();
     matchState.team2.players[1] = (localStorage.getItem('padel_t2_p2') || 'SARAH').toUpperCase();
-    matchState.rule = localStorage.getItem('padel_rule') || 'GOLDEN POINT';
+    matchState.rule = localStorage.getItem('padel_rule') || 'SILVER POINT';
     renderUI();
   };
 </script>
-</body>
-</html>
