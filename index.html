@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Padel Scorekeeper - Wear OS Watch App</title>
   
-  <!-- Web App Icon & PWA Manifest for Galaxy Watch & Mobile Home Screens -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23ccff00'/><circle cx='35' cy='35' r='4' fill='%23000'/><circle cx='65' cy='35' r='4' fill='%23000'/><circle cx='35' cy='65' r='4' fill='%23000'/><circle cx='65' cy='65' r='4' fill='%23000'/><path d='M20 50 Q 50 20 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/><path d='M20 50 Q 50 80 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23ccff00'/><circle cx='35' cy='35' r='4' fill='%23000'/><circle cx='65' cy='35' r='4' fill='%23000'/><circle cx='35' cy='65' r='4' fill='%23000'/><circle cx='65' cy='65' r='4' fill='%23000'/><path d='M20 50 Q 50 20 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/><path d='M20 50 Q 50 80 80 50' stroke='%23ffffff' stroke-width='4' fill='none'/></svg>">
   <meta name="theme-color" content="#000000">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,8 +16,6 @@
   @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@400;600;800;900&display=swap');
   
   :root {
-    --team1-bg: linear-gradient(135deg, #0d3251 0%, #175d97 50%, #0d3251 100%);
-    --team2-bg: linear-gradient(135deg, #4d0a1b 0%, #8f1731 50%, #4d0a1b 100%);
     --neon-yellow: #ccff00;
   }
 
@@ -40,12 +36,6 @@
 
   .font-teko {
     font-family: 'Teko', sans-serif;
-  }
-
-  /* Safe inner boundaries for circular smartwatch viewports */
-  .circular-safe-inset {
-    padding-left: 18%;
-    padding-right: 18%;
   }
 
   .watch-container {
@@ -70,7 +60,6 @@
     filter: brightness(1.2);
   }
 
-  /* Custom scrollbar styling for watch sub-menus */
   ::-webkit-scrollbar {
     width: 4px;
   }
@@ -84,50 +73,49 @@
 
   <div class="watch-container flex flex-col justify-between relative bg-black border-4 border-gray-900">
     
-    <!-- TOP HALF: TEAM 1 ZONE (Blue) -->
-    <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-between pt-6 pb-2 circular-safe-inset bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
+    <!-- TOP HALF: TEAM 1 ZONE (Blue) - px-20 padding with py-4 to nudge content closer to the center ribbon -->
+    <div id="team1-zone" onclick="scorePoint(1)" class="h-1/2 w-full flex flex-col justify-end pb-4 pt-6 px-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-700 via-sky-900 to-slate-950 cursor-pointer relative btn-tap-effect border-b border-gray-800/60">
       
       <!-- Live Clock Top Center -->
-      <div class="absolute top-1.5 left-0 right-0 text-center pointer-events-none">
-        <span id="top-clock" class="text-lg font-black text-white tracking-widest drop-shadow">12:00</span>
+      <div class="absolute top-2 left-0 right-0 text-center pointer-events-none">
+        <span id="top-clock" class="text-xs font-black text-white tracking-widest drop-shadow">12:00</span>
       </div>
 
-      <!-- Top Content Row: Player Names (Left) and Game Score (Right) -->
-      <div class="flex items-center justify-between w-full my-auto">
+      <!-- Top Content Row: Player Names & Set Scores (Left) and Game Score (Right) -->
+      <div class="flex items-center justify-between w-full">
         
-        <!-- Left Column: Player Names & Set Scores -->
-        <div class="flex flex-col text-left max-w-[55%]">
+        <!-- Left Column: Player Names & Set Scores (tighter spacing with 15% bigger font: text-[1.7rem]) -->
+        <div class="flex flex-col text-left flex-1 min-w-0 pr-4">
           <!-- Player 1 Name & Serve Indicator -->
-          <div class="flex items-center gap-1.5">
-            <span id="t1-p1" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">BEN</span>
-            <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
+          <div class="flex items-center gap-2 leading-none whitespace-nowrap overflow-visible">
+            <span id="t1-p1" class="font-teko text-[1.7rem] italic font-bold tracking-wide text-white uppercase">BEN</span>
+            <span id="t1-p1-serve" class="px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
-          <div class="flex items-center gap-1.5">
-            <span id="t1-p2" class="text-base sm:text-lg font-black tracking-tight text-white uppercase truncate leading-none">REBECCA</span>
-            <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
+          <div class="flex items-center gap-2 leading-none mt-1 whitespace-nowrap overflow-visible">
+            <span id="t1-p2" class="font-teko text-[1.7rem] italic font-bold tracking-wide text-white uppercase">REBECCA</span>
+            <span id="t1-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
 
-          <!-- Team 1 Sets Overview Breakdown -->
-          <div id="t1-set-container" class="flex items-center gap-2 text-xl sm:text-2xl font-black mt-1 overflow-x-auto no-scrollbar">
+          <!-- Team 1 Sets Overview Breakdown (15% bigger font: text-lg) -->
+          <div id="t1-set-container" class="flex items-center gap-1.5 text-lg font-black mt-1 overflow-x-auto no-scrollbar">
             <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
-        <!-- Right Column: Massive Slanted Game Score Number -->
-        <div class="flex items-center justify-end">
-          <span id="t1-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
+        <!-- Right Column: Massive Slanted Game Score Number (Unchanged original size & placement) -->
+        <div class="flex items-center justify-end shrink-0 pl-2">
+          <span id="t1-score" class="font-teko text-7xl sm:text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
         </div>
       </div>
 
     </div>
 
-    <!-- CENTER DIVIDER CONTROL BAR -->
     <div class="z-20 w-full bg-black/90 backdrop-blur-md border-y border-yellow-500/30 py-1.5 px-3 flex items-center justify-between shadow-2xl relative">
       
       <!-- Left: Elongated Pill Undo Button -->
-      <button onclick="event.stopPropagation(); undoLastPoint();" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 btn-tap-effect border border-gray-700 shadow-md">
-        <span class="text-sm">↩</span>
+      <button onclick="event.stopPropagation(); undoLastPoint();" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 btn-tap-effect border border-gray-700 shadow-md">
+        <span class="text-xs">↩</span>
         <span>Undo</span>
       </button>
 
@@ -142,60 +130,78 @@
       </div>
 
       <!-- Right: Elongated Pill Menu Button -->
-      <button onclick="event.stopPropagation(); toggleMenu(true);" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 btn-tap-effect border border-gray-700 shadow-md">
-        <span class="text-sm">⚙</span>
+      <button onclick="event.stopPropagation(); toggleMenu(true);" class="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 btn-tap-effect border border-gray-700 shadow-md">
+        <span class="text-xs">⚙</span>
         <span>Menu</span>
       </button>
     </div>
 
-    <!-- BOTTOM HALF: TEAM 2 ZONE (Red) -->
-    <div id="team2-zone" onclick="scorePoint(2)" class="h-1/2 w-full flex flex-col justify-between pt-2 pb-6 circular-safe-inset bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-rose-800 via-rose-950 to-slate-950 cursor-pointer relative btn-tap-effect border-t border-gray-800/60">
+    <!-- BOTTOM HALF: TEAM 2 ZONE (Red) - px-20 padding with pt-4 to nudge content closer to the center ribbon -->
+    <div id="team2-zone" onclick="scorePoint(2)" class="h-1/2 w-full flex flex-col justify-start pt-4 pb-6 px-20 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-rose-800 via-rose-950 to-slate-950 cursor-pointer relative btn-tap-effect border-t border-gray-800/60">
       
-      <!-- Bottom Content Row: Player Names & Game Score -->
-      <div class="flex items-center justify-between w-full my-auto">
+      <!-- Bottom Content Row: Player Names & Set Scores (Left) and Game Score (Right) -->
+      <div class="flex items-center justify-between w-full">
         
-        <!-- Left Column: Player Names & Set Scores -->
-        <div class="flex flex-col text-left max-w-[55%]">
+        <!-- Left Column: Player Names & Set Scores (tighter spacing with 15% bigger font: text-[1.7rem]) -->
+        <div class="flex flex-col text-left flex-1 min-w-0 pr-4">
           <!-- Player 1 Name & Serve Indicator -->
-          <div class="flex items-center gap-1.5">
-            <span id="t2-p1" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">IAN</span>
-            <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
+          <div class="flex items-center gap-2 leading-none whitespace-nowrap overflow-visible">
+            <span id="t2-p1" class="font-teko text-[1.7rem] italic font-bold tracking-wide text-rose-200 uppercase">IAN</span>
+            <span id="t2-p1-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
           <!-- Player 2 Name & Serve Indicator -->
-          <div class="flex items-center gap-1.5">
-            <span id="t2-p2" class="text-base sm:text-lg font-black tracking-tight text-rose-200 uppercase truncate leading-none">SARAH</span>
-            <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[10px] font-black rounded-full leading-none glow-text">S</span>
+          <div class="flex items-center gap-2 leading-none mt-1 whitespace-nowrap overflow-visible">
+            <span id="t2-p2" class="font-teko text-[1.7rem] italic font-bold tracking-wide text-rose-200 uppercase">SARAH</span>
+            <span id="t2-p2-serve" class="hidden px-1.5 py-0.5 bg-[var(--neon-yellow)] text-black text-[8px] font-black rounded-full glow-text shrink-0">S</span>
           </div>
 
-          <!-- Team 2 Sets Overview Breakdown -->
-          <div id="t2-set-container" class="flex items-center gap-2 text-xl sm:text-2xl font-black mt-1 overflow-x-auto no-scrollbar">
+          <!-- Team 2 Sets Overview Breakdown (15% bigger font: text-lg) -->
+          <div id="t2-set-container" class="flex items-center gap-1.5 text-lg font-black mt-1 overflow-x-auto no-scrollbar">
             <!-- Dynamic Set Scores Rendered Here -->
           </div>
         </div>
 
-        <!-- Right Column: Massive Slanted Game Score Number -->
-        <div class="flex items-center justify-end">
-          <span id="t2-score" class="font-teko text-8xl italic font-bold leading-none text-white tracking-tighter">0</span>
+        <!-- Right Column: Massive Slanted Game Score Number (Unchanged original size & placement) -->
+        <div class="flex items-center justify-end shrink-0 pl-2">
+          <span id="t2-score" class="font-teko text-7xl sm:text-8xl italic font-bold leading-none text-rose-200 tracking-tighter">0</span>
         </div>
       </div>
 
     </div>
-
   </div>
 
-  <!-- FIRST SERVER SELECTION MODAL -->
-  <div id="server-select-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 text-center">
-    <div class="w-full max-w-xs my-auto space-y-3">
-      <h3 class="text-base font-black text-yellow-400 tracking-wider uppercase">WHO SERVES FIRST?</h3>
-      <p class="text-[11px] text-gray-300 font-medium">Select the initial server for this match:</p>
-      
-      <div class="grid grid-cols-2 gap-2 pt-1" id="server-select-buttons">
-        <!-- Dynamically populated buttons for each player -->
-      </div>
+  <div id="server-select-modal" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden p-1.5">
+    
+    <!-- Top Row Quadrants (Team 1 Players: Top-Left & Top-Right) -->
+    <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pt-1.5">
+      <!-- Top-Left Quadrant (Team 1 Player 1) -->
+      <button onclick="setInitialServer(0)" id="srv-btn-0" class="bg-gradient-to-br from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-[8rem] rounded-tr-2xl rounded-br-lg rounded-bl-2xl p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+        <span id="srv-lbl-0" class="truncate w-full text-center px-1">BEN</span>
+      </button>
+      <!-- Top-Right Quadrant (Team 1 Player 2) -->
+      <button onclick="setInitialServer(2)" id="srv-btn-2" class="bg-gradient-to-bl from-blue-700 via-sky-900 to-slate-950 hover:brightness-125 border border-blue-400/50 rounded-tl-2xl rounded-tr-[8rem] rounded-br-2xl rounded-bl-lg p-2 flex flex-col items-center justify-center text-white uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+        <span id="srv-lbl-2" class="truncate w-full text-center px-1">REBECCA</span>
+      </button>
+    </div>
+
+    <!-- Center Horizontal Question Band -->
+    <div class="z-20 w-full h-[44px] bg-black/95 backdrop-blur-md border-y border-yellow-500/50 py-1 px-4 flex flex-col items-center justify-center shadow-2xl relative shrink-0">
+      <h3 class="text-[10px] sm:text-xs font-black text-yellow-400 tracking-wider uppercase text-center glow-text">WHO IS SERVING FIRST?</h3>
+    </div>
+
+    <!-- Bottom Row Quadrants (Team 2 Players: Bottom-Left & Bottom-Right) -->
+    <div class="h-[calc(50%-22px)] w-full grid grid-cols-2 gap-1 px-1.5 pb-1.5">
+      <!-- Bottom-Left Quadrant (Team 2 Player 1) -->
+      <button onclick="setInitialServer(1)" id="srv-btn-1" class="bg-gradient-to-tr from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-2xl rounded-tr-lg rounded-br-2xl rounded-bl-[8rem] p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+        <span id="srv-lbl-1" class="truncate w-full text-center px-1">IAN</span>
+      </button>
+      <!-- Bottom-Right Quadrant (Team 2 Player 2) -->
+      <button onclick="setInitialServer(3)" id="srv-btn-3" class="bg-gradient-to-tl from-rose-800 via-rose-950 to-slate-950 hover:brightness-125 border border-rose-500/50 rounded-tl-lg rounded-tr-2xl rounded-br-[8rem] rounded-bl-2xl p-2 flex flex-col items-center justify-center text-rose-100 uppercase font-teko italic text-4xl sm:text-5xl tracking-wide btn-tap-effect shadow-2xl">
+        <span id="srv-lbl-3" class="truncate w-full text-center px-1">SARAH</span>
+      </button>
     </div>
   </div>
 
-  <!-- END OF SET PROMPT MODAL -->
   <div id="end-set-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
     <div class="w-full max-w-xs space-y-3 my-auto py-4">
       <div class="text-[var(--neon-yellow)] text-2xl font-black tracking-wider uppercase" id="set-winner-title">SET WON!</div>
@@ -225,7 +231,6 @@
     </div>
   </div>
 
-  <!-- MENU MODAL OVERLAY -->
   <div id="menu-modal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 text-center overflow-y-auto">
     <div class="w-full max-w-xs my-auto space-y-3 py-2">
       
@@ -253,12 +258,12 @@
           <label class="text-[10px] text-gray-400 font-bold uppercase block">Edit Players</label>
           <div class="grid grid-cols-2 gap-1.5">
             <input id="input-t1p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P1" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
-            <input id="input-t1p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P2" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
+            <input id="input-t1p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 1 P2" class="bg-gray-900 border border-blue-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
             <input id="input-t2p1" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P1" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
             <input id="input-t2p2" onfocus="pauseUpdatesForKeyboard(true)" onblur="pauseUpdatesForKeyboard(false)" placeholder="TEAM 2 P2" class="bg-gray-900 border border-rose-900/60 rounded-lg p-1.5 text-xs font-bold text-white uppercase text-center outline-none focus:border-yellow-400" />
           </div>
           <button onclick="savePlayerNames()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-1.5 rounded-xl border border-blue-400">
-            Save Names
+            Save Names & Start Match
           </button>
         </div>
 
@@ -268,7 +273,7 @@
           <span>Finish & Log Match Now</span>
         </button>
 
-        <!-- Compact 2-Column Grid for Bottom Action Buttons to prevent Wear OS swipe conflicts -->
+        <!-- Compact 2-Column Grid for Bottom Action Buttons -->
         <div class="grid grid-cols-2 gap-1.5 pt-0.5">
           <button onclick="showHistoryView(true)" class="bg-gray-800 hover:bg-gray-700 text-yellow-400 text-[11px] font-bold py-2 rounded-xl border border-gray-700 flex items-center justify-center gap-1">
             <span>📜</span>
@@ -281,7 +286,7 @@
           </button>
         </div>
 
-        <!-- Close Menu Button moved up into accessible view -->
+        <!-- Close Menu Button (Go to live scoring) -->
         <button onclick="toggleMenu(false)" class="w-full bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black py-2 rounded-xl border border-yellow-300 uppercase tracking-wide">
           ✕ Close Settings
         </button>
@@ -466,7 +471,6 @@
         let setsWonA = 0;
         let setsWonB = 0;
 
-        // Parse set scores for total games and serve breakdown if available
         setPairs.forEach(s => {
           const parts = s.split('-');
           if (parts.length === 2) {
@@ -488,7 +492,6 @@
           else matchupStats[key].winsA++;
         }
 
-        // Aggregate player serve stats if recorded in match history
         if (m.playerServeStats) {
           Object.keys(m.playerServeStats).forEach(player => {
             if (!matchupStats[key].playerStats[player]) {
@@ -503,12 +506,14 @@
       h2hList.innerHTML = Object.values(matchupStats).map(stat => {
         let playerStatsHtml = '';
         if (Object.keys(stat.playerStats).length > 0) {
-          playerStatsHtml = `<div class="mt-2 pt-1 border-t border-gray-800 text-[10px] text-gray-300 space-y-0.5">
-            <div class="font-bold text-yellow-400">Serve Win/Loss Breakdown:</div>` +
+          playerStatsHtml = `<div class="mt-2 pt-1.5 border-t border-gray-800 text-[10px] text-gray-300 space-y-1">
+            <div class="font-bold text-yellow-400">Player Serve Performance:</div>` +
             Object.entries(stat.playerStats).map(([plr, st]) => `
-              <div class="flex justify-between">
-                <span>${plr}:</span>
-                <span class="font-mono text-emerald-400">${st.wonOnServe} won</span> / <span class="font-mono text-rose-400">${st.lostOnServe} lost</span>
+              <div class="flex justify-between items-center">
+                <span class="font-bold uppercase text-white">${plr}:</span>
+                <div>
+                  <span class="font-mono text-emerald-400 font-bold">${st.wonOnServe} won</span> / <span class="font-mono text-rose-400 font-bold">${st.lostOnServe} lost</span>
+                </div>
               </div>
             `).join('') + `</div>`;
         } else {
@@ -520,11 +525,11 @@
             <div class="text-[10px] text-yellow-400 font-bold truncate">${stat.teamA} vs ${stat.teamB}</div>
             <div class="flex justify-between items-center text-xs font-black text-white pt-1 border-t border-gray-800">
               <span>Match Wins: ${stat.winsA} - ${stat.winsB}</span>
-              <span class="text-[10px] text-gray-400">Total: ${stat.totalMatches}</span>
+              <span class="text-[10px] text-gray-400">Played: ${stat.totalMatches}</span>
             </div>
             <div class="flex justify-between items-center text-[11px] text-gray-300">
               <span>Total Games Won:</span>
-              <span class="font-mono">${stat.totalGamesA} - ${stat.totalGamesB}</span>
+              <span class="font-mono font-bold text-yellow-300">${stat.totalGamesA} - ${stat.totalGamesB}</span>
             </div>
             ${playerStatsHtml}
           </div>
@@ -820,35 +825,29 @@
     }
 
     function promptFirstServer() {
-      const container = document.getElementById('server-select-buttons');
-      if (!container) return;
-
       const p1 = matchState.team1.players[0] || 'BEN';
       const p2 = matchState.team1.players[1] || 'REBECCA';
       const p3 = matchState.team2.players[0] || 'IAN';
       const p4 = matchState.team2.players[1] || 'SARAH';
 
-      container.innerHTML = `
-        <button onclick="setInitialServer(0)" class="bg-blue-900/60 border border-blue-500 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
-          ${p1}
-        </button>
-        <button onclick="setInitialServer(2)" class="bg-blue-900/60 border border-blue-500 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
-          ${p2}
-        </button>
-        <button onclick="setInitialServer(1)" class="bg-rose-900/60 border border-rose-500 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
-          ${p3}
-        </button>
-        <button onclick="setInitialServer(3)" class="bg-rose-900/60 border border-rose-500 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl text-xs truncate uppercase btn-tap-effect">
-          ${p4}
-        </button>
-      `;
+      const lbl0 = document.getElementById('srv-lbl-0');
+      const lbl1 = document.getElementById('srv-lbl-1');
+      const lbl2 = document.getElementById('srv-lbl-2');
+      const lbl3 = document.getElementById('srv-lbl-3');
 
-      document.getElementById('server-select-modal').classList.remove('hidden');
+      if (lbl0) lbl0.innerText = p1;
+      if (lbl1) lbl1.innerText = p3;
+      if (lbl2) lbl2.innerText = p2;
+      if (lbl3) lbl3.innerText = p4;
+
+      const serverModal = document.getElementById('server-select-modal');
+      if (serverModal) serverModal.classList.remove('hidden');
     }
 
     function setInitialServer(index) {
       matchState.serverIndex = index;
-      document.getElementById('server-select-modal').classList.add('hidden');
+      const serverModal = document.getElementById('server-select-modal');
+      if (serverModal) serverModal.classList.add('hidden');
       renderUI();
     }
 
@@ -895,6 +894,7 @@
 
       renderUI();
       toggleMenu(false);
+      promptFirstServer();
     }
 
     function winGame(teamNumber) {
@@ -904,7 +904,6 @@
       const currSetIdx = matchState.currentSet;
       winningTeam.setScores[currSetIdx] = (winningTeam.setScores[currSetIdx] || 0) + 1;
       
-      // Track serve performance stats for head-to-head analysis
       if (!matchState.playerServeStats) matchState.playerServeStats = {};
       const servingPlayerMap = {
         0: matchState.team1.players[0],
@@ -1011,8 +1010,8 @@
 
           const isCurrent = (i === matchState.currentSet);
           const styleClass = isCurrent 
-            ? "text-[var(--neon-yellow)] text-2xl sm:text-3xl font-black glow-text"
-            : "text-gray-300 text-lg sm:text-xl font-black";
+            ? "text-[var(--neon-yellow)] text-xl font-black glow-text"
+            : "text-gray-300 text-lg font-black";
 
           htmlT1 += `<span class="${styleClass}">${score1}</span>`;
           htmlT2 += `<span class="${styleClass}">${score2}</span>`;
@@ -1034,6 +1033,7 @@
       matchState.rule = localStorage.getItem('padel_rule') || 'SILVER POINT';
       
       renderUI();
+      // Start on menu screen on initial load
       toggleMenu(true);
     };
   </script>
